@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		993A79EC26DFB8820067664B /* SwiftSyntax in Frameworks */ = {isa = PBXBuildFile; productRef = 993A79EA26DFB8820067664B /* SwiftSyntax */; };
+		993A79ED26DFB8820067664B /* SwiftParser in Frameworks */ = {isa = PBXBuildFile; productRef = 993A79EB26DFB8820067664B /* SwiftParser */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		993A79CC3006E02E001067AB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -19,7 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		993A79CE3006E02E001067AB /* Xcode Semantic Swift Mapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Xcode Semantic Swift Mapper"; sourceTree = BUILT_PRODUCTS_DIR; };
+		993A79CE3006E02E001067AB /* XCSwiftMap */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XCSwiftMap; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,6 +40,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				993A79EC26DFB8820067664B /* SwiftSyntax in Frameworks */,
+				993A79ED26DFB8820067664B /* SwiftParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +59,7 @@
 		993A79CF3006E02E001067AB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				993A79CE3006E02E001067AB /* Xcode Semantic Swift Mapper */,
+				993A79CE3006E02E001067AB /* XCSwiftMap */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -77,9 +84,11 @@
 			);
 			name = "Xcode Semantic Swift Mapper";
 			packageProductDependencies = (
+				993A79EA26DFB8820067664B /* SwiftSyntax */,
+				993A79EB26DFB8820067664B /* SwiftParser */,
 			);
 			productName = "Xcode Semantic Swift Mapper";
-			productReference = 993A79CE3006E02E001067AB /* Xcode Semantic Swift Mapper */;
+			productReference = 993A79CE3006E02E001067AB /* XCSwiftMap */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -113,8 +122,35 @@
 			targets = (
 				993A79CD3006E02E001067AB /* Xcode Semantic Swift Mapper */,
 			);
+			packageReferences = (
+				993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */,
+			);
 		};
 /* End PBXProject section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftlang/swift-syntax.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 603.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		993A79EA26DFB8820067664B /* SwiftSyntax */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftSyntax;
+		};
+		993A79EB26DFB8820067664B /* SwiftParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXSourcesBuildPhase section */
 		993A79CA3006E02E001067AB /* Sources */ = {
@@ -253,10 +289,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 623RDETCER;
 				ENABLE_HARDENED_RUNTIME = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = XCSwiftMap;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -266,10 +302,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 623RDETCER;
 				ENABLE_HARDENED_RUNTIME = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = XCSwiftMap;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
