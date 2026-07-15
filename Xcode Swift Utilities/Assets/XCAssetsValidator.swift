@@ -35,7 +35,7 @@ public class XCAssetsValidator {
         let assets = scanAssetCatalogs()
         
         // 2. Scan for references in source code
-        let (stringRefs, memberRefs, nonSwiftRefs) = scanReferences(assets: assets)
+        let (preciseStringRefs, allStringRefs, memberRefs, nonSwiftRefs) = scanReferences(assets: assets)
         
         // 3. Match references to assets to find:
         //    - Unused assets: Assets in catalogs with no matching reference in code.
@@ -48,8 +48,8 @@ public class XCAssetsValidator {
         // Track which assets have been referenced
         var referencedAssetNames = Set<String>()
         
-        // Check string references (exact name match)
-        for ref in stringRefs {
+        // Check ALL string references (exact name match) for unused assets verification
+        for ref in allStringRefs {
             if assetNameMap[ref.name] != nil {
                 referencedAssetNames.insert(ref.name)
             }
@@ -78,12 +78,9 @@ public class XCAssetsValidator {
             }
         }
         
-        // Find missing references
+        // Find missing references (only look at precise string references)
         var missingReferences: [AssetReference] = []
-        
-        // For string references: if the string looks like an asset name/path (e.g. contains no spaces or conforms to asset naming patterns) and doesn't exist, we might flag it. But to avoid too many false positives, we only flag string references that are passed to known initializers.
-        // We will filter string references to only those that were marked as "likely asset initializers" by the visitor.
-        for ref in stringRefs {
+        for ref in preciseStringRefs {
             if assetNameMap[ref.name] == nil {
                 missingReferences.append(ref)
             }
@@ -203,8 +200,9 @@ public class XCAssetsValidator {
         return results
     }
     
-    private func scanReferences(assets: [AssetInfo]) -> (stringRefs: [AssetReference], memberRefs: [AssetReference], nonSwiftRefs: [AssetReference]) {
-        var stringRefs: [AssetReference] = []
+    private func scanReferences(assets: [AssetInfo]) -> (preciseStringRefs: [AssetReference], allStringRefs: [AssetReference], memberRefs: [AssetReference], nonSwiftRefs: [AssetReference]) {
+        var preciseStringRefs: [AssetReference] = []
+        var allStringRefs: [AssetReference] = []
         var memberRefs: [AssetReference] = []
         var nonSwiftRefs: [AssetReference] = []
         
@@ -245,29 +243,44 @@ public class XCAssetsValidator {
             let visitor = SwiftAssetReferenceVisitor(viewMode: .sourceAccurate, filePath: relPath, converter: converter)
             visitor.walk(sourceFile)
             
-            stringRefs.append(contentsOf: visitor.stringReferences)
+            preciseStringRefs.append(contentsOf: visitor.preciseStringReferences)
+            allStringRefs.append(contentsOf: visitor.allStringReferences)
             memberRefs.append(contentsOf: visitor.memberReferences)
         }
         
-        // 2. Scan non-Swift files using fast text searches for asset names
+        // 2. Scan non-Swift files using delimited text searches for asset names
         for fileURL in nonSwiftFiles {
             guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else { continue }
             let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
             
             for asset in assets {
-                if content.contains(asset.name) {
+                if isAssetReference(in: content, name: asset.name) {
                     nonSwiftRefs.append(AssetReference(name: asset.name, file: relPath, line: 0))
                 }
             }
         }
         
-        return (stringRefs, memberRefs, nonSwiftRefs)
+        return (preciseStringRefs, allStringRefs, memberRefs, nonSwiftRefs)
+    }
+    
+    private func isAssetReference(in content: String, name: String) -> Bool {
+        if content.contains("\"" + name + "\"") {
+            return true
+        }
+        if content.contains(">" + name + "<") {
+            return true
+        }
+        if content.contains("'" + name + "'") {
+            return true
+        }
+        return false
     }
 }
 
 // SwiftSyntax Visitor to look for asset references in Swift source code
 class SwiftAssetReferenceVisitor: SyntaxVisitor {
-    var stringReferences: [AssetReference] = []
+    var preciseStringReferences: [AssetReference] = []
+    var allStringReferences: [AssetReference] = []
     var memberReferences: [AssetReference] = []
     
     private let filePath: String
@@ -289,10 +302,13 @@ class SwiftAssetReferenceVisitor: SyntaxVisitor {
             }
         }
         
+        let startLoc = node.startLocation(converter: converter)
+        let ref = AssetReference(name: value, file: filePath, line: startLoc.line)
+        allStringReferences.append(ref)
+        
         // Check context to make sure this is likely an asset reference.
         if isAssetInitializerContext(node) {
-            let startLoc = node.startLocation(converter: converter)
-            stringReferences.append(AssetReference(name: value, file: filePath, line: startLoc.line))
+            preciseStringReferences.append(ref)
         }
         return .visitChildren
     }
@@ -323,8 +339,11 @@ class SwiftAssetReferenceVisitor: SyntaxVisitor {
         while let current = parent {
             if let call = current.as(FunctionCallExprSyntax.self) {
                 let calledDesc = call.calledExpression.trimmedDescription
-                if calledDesc == "Image" || calledDesc == "Color" || calledDesc == "UIImage" || calledDesc == "UIColor" || calledDesc == "NSImage" || calledDesc == "NSColor" || calledDesc == "Label" {
-                    return true
+                let allowedTypes = ["Image", "Color", "UIImage", "UIColor", "NSImage", "NSColor", "Label"]
+                for type in allowedTypes {
+                    if calledDesc == type || calledDesc == "\(type).init" {
+                        return true
+                    }
                 }
                 break
             }
