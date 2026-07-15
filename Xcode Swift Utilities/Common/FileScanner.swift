@@ -58,3 +58,17 @@ public func relativePath(of fileURL: URL, relativeTo baseURL: URL) -> String {
     }
     return remaining.joined(separator: "/")
 }
+
+public func getBaseTypeName(from typeStr: String) -> String {
+    var result = typeStr.trimmingCharacters(in: .whitespacesAndNewlines)
+    if result.hasSuffix("?") || result.hasSuffix("!") {
+        result = String(result.dropLast())
+    }
+    if result.hasPrefix("[") && result.hasSuffix("]") {
+        result = String(result.dropFirst().dropLast())
+    }
+    if result.hasSuffix("?") || result.hasSuffix("!") {
+        result = String(result.dropLast())
+    }
+    return result.trimmingCharacters(in: .whitespacesAndNewlines)
+}
