@@ -30,6 +30,15 @@ func main() {
     if args[0] == "extract-schema" {
         args.removeFirst()
         runExtractSchema(args: args)
+    } else if args[0] == "view-skeleton" {
+        args.removeFirst()
+        runViewSkeleton(args: args)
+    } else if args[0] == "trace-state" {
+        args.removeFirst()
+        runTraceState(args: args)
+    } else if args[0] == "spm-summary" {
+        args.removeFirst()
+        runSPMSummary(args: args)
     } else {
         runSemanticMap(args: args)
     }
@@ -40,6 +49,9 @@ func printUsage() {
 Usage:
   XCSwiftMap [--json] [--summary] [--mermaid] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>
+  XCSwiftMap view-skeleton <file-path>
+  XCSwiftMap trace-state [--json] <directory-or-file-path>
+  XCSwiftMap spm-summary [--json] [directory-path]
 """, stderr)
 }
 
@@ -151,6 +163,138 @@ func runExtractSchema(args: [String]) {
                 let queryLoc = query.location.map { " // \($0.file):\($0.line)" } ?? ""
                 print("  @Query var \(query.name): \(query.type)\(queryLoc)")
             }
+        }
+    }
+}
+
+func runViewSkeleton(args: [String]) {
+    guard args.count > 0 else {
+        fputs("Usage: XCSwiftMap view-skeleton <file-path>\n", stderr)
+        exit(1)
+    }
+    let targetPath = args[0]
+    let fileURL = URL(fileURLWithPath: targetPath)
+    
+    guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
+        fputs("Error: Could not read file at \(targetPath)\n", stderr)
+        exit(1)
+    }
+    
+    let sourceFile = Parser.parse(source: fileContent)
+    let finder = ViewSkeletonFinder(viewMode: .sourceAccurate)
+    finder.walk(sourceFile)
+    
+    if !finder.hasFoundView {
+        fputs("No SwiftUI views with a body property found in \(targetPath)\n", stderr)
+        exit(1)
+    }
+}
+
+func runTraceState(args: [String]) {
+    var isJSON = false
+    var path: String? = nil
+    
+    var idx = 0
+    while idx < args.count {
+        let arg = args[idx]
+        if arg == "--json" {
+            isJSON = true
+        } else if arg.hasPrefix("-") {
+            fputs("Unknown option: \(arg)\n", stderr)
+            exit(1)
+        } else {
+            path = arg
+        }
+        idx += 1
+    }
+    
+    guard let targetPath = path else {
+        fputs("Usage: XCSwiftMap trace-state [--json] <directory-or-file-path>\n", stderr)
+        exit(1)
+    }
+    
+    let swiftFiles = findSwiftFiles(at: targetPath, excluding: [])
+    if swiftFiles.isEmpty {
+        fputs("No Swift files found at: \(targetPath)\n", stderr)
+        exit(1)
+    }
+    
+    let visitor = StateTraceVisitor(viewMode: .sourceAccurate)
+    let baseFolderURL = URL(fileURLWithPath: targetPath)
+    
+    for fileURL in swiftFiles {
+        if let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) {
+            let sourceFile = Parser.parse(source: fileContent)
+            let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
+            visitor.currentFilePath = relPath
+            visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+            visitor.walk(sourceFile)
+        }
+    }
+    
+    if isJSON {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        if let data = try? encoder.encode(visitor.views), let jsonString = String(data: data, encoding: .utf8) {
+            print(jsonString)
+        }
+    } else {
+        for view in visitor.views {
+            let locStr = view.location.map { " // \($0.file):\($0.line)" } ?? ""
+            print("View: \(view.name)\(locStr)")
+            for v in view.variables {
+                let vLoc = v.location.map { " // \($0.file):\($0.line)" } ?? ""
+                print("  @\(v.wrapper) var \(v.name): \(v.type)\(vLoc)")
+            }
+            print("")
+        }
+    }
+}
+
+func runSPMSummary(args: [String]) {
+    var isJSON = false
+    var path: String? = nil
+    
+    var idx = 0
+    while idx < args.count {
+        let arg = args[idx]
+        if arg == "--json" {
+            isJSON = true
+        } else if arg.hasPrefix("-") {
+            fputs("Unknown option: \(arg)\n", stderr)
+            exit(1)
+        } else {
+            path = arg
+        }
+        idx += 1
+    }
+    
+    let targetPath = path ?? FileManager.default.currentDirectoryPath
+    let resolvedFiles = findPackageResolvedFiles(at: targetPath)
+    
+    if resolvedFiles.isEmpty {
+        fputs("No Package.resolved files found under: \(targetPath)\n", stderr)
+        exit(1)
+    }
+    
+    var allDeps: [String: String] = [:]
+    for fileURL in resolvedFiles {
+        let deps = parsePackageResolved(at: fileURL)
+        for (pkg, version) in deps {
+            allDeps[pkg] = version
+        }
+    }
+    
+    if isJSON {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        if let data = try? encoder.encode(allDeps), let jsonString = String(data: data, encoding: .utf8) {
+            print(jsonString)
+        }
+    } else {
+        let sorted = allDeps.sorted(by: { $0.key < $1.key })
+        for (pkg, version) in sorted {
+            print("\(pkg) v\(version)")
         }
     }
 }
