@@ -28,9 +28,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		993A79D03006E02E001067AB /* Xcode Semantic Swift Mapper */ = {
+		993A79D03006E02E001067AB /* Xcode Swift Utilities */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Xcode Semantic Swift Mapper";
+			path = "Xcode Swift Utilities";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -51,7 +51,7 @@
 		993A79C53006E02E001067AB = {
 			isa = PBXGroup;
 			children = (
-				993A79D03006E02E001067AB /* Xcode Semantic Swift Mapper */,
+				993A79D03006E02E001067AB /* Xcode Swift Utilities */,
 				993A79CF3006E02E001067AB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,9 +67,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		993A79CD3006E02E001067AB /* Xcode Semantic Swift Mapper */ = {
+		993A79CD3006E02E001067AB /* Xcode Swift Utilities */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 993A79D53006E02E001067AB /* Build configuration list for PBXNativeTarget "Xcode Semantic Swift Mapper" */;
+			buildConfigurationList = 993A79D53006E02E001067AB /* Build configuration list for PBXNativeTarget "Xcode Swift Utilities" */;
 			buildPhases = (
 				993A79CA3006E02E001067AB /* Sources */,
 				993A79CB3006E02E001067AB /* Frameworks */,
@@ -80,14 +80,14 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				993A79D03006E02E001067AB /* Xcode Semantic Swift Mapper */,
+				993A79D03006E02E001067AB /* Xcode Swift Utilities */,
 			);
-			name = "Xcode Semantic Swift Mapper";
+			name = "Xcode Swift Utilities";
 			packageProductDependencies = (
 				993A79EA26DFB8820067664B /* SwiftSyntax */,
 				993A79EB26DFB8820067664B /* SwiftParser */,
 			);
-			productName = "Xcode Semantic Swift Mapper";
+			productName = "Xcode Swift Utilities";
 			productReference = 993A79CE3006E02E001067AB /* XCSwiftMap */;
 			productType = "com.apple.product-type.tool";
 		};
@@ -106,7 +106,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 993A79C93006E02E001067AB /* Build configuration list for PBXProject "Xcode Semantic Swift Mapper" */;
+			buildConfigurationList = 993A79C93006E02E001067AB /* Build configuration list for PBXProject "Xcode Swift Utilities" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -123,7 +123,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				993A79CD3006E02E001067AB /* Xcode Semantic Swift Mapper */,
+				993A79CD3006E02E001067AB /* Xcode Swift Utilities */,
 			);
 		};
 /* End PBXProject section */
@@ -142,6 +142,7 @@
 		993A79D33006E02E001067AB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MARKETING_VERSION = 1.0.1;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -206,6 +207,7 @@
 		993A79D43006E02E001067AB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MARKETING_VERSION = 1.0.1;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -262,6 +264,7 @@
 		993A79D63006E02E001067AB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MARKETING_VERSION = 1.0.1;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 623RDETCER;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -275,6 +278,7 @@
 		993A79D73006E02E001067AB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MARKETING_VERSION = 1.0.1;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 623RDETCER;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -288,7 +292,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		993A79C93006E02E001067AB /* Build configuration list for PBXProject "Xcode Semantic Swift Mapper" */ = {
+		993A79C93006E02E001067AB /* Build configuration list for PBXProject "Xcode Swift Utilities" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				993A79D33006E02E001067AB /* Debug */,
@@ -297,7 +301,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		993A79D53006E02E001067AB /* Build configuration list for PBXNativeTarget "Xcode Semantic Swift Mapper" */ = {
+		993A79D53006E02E001067AB /* Build configuration list for PBXNativeTarget "Xcode Swift Utilities" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				993A79D63006E02E001067AB /* Debug */,

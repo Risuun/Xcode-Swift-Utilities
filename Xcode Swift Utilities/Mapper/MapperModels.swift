@@ -1,3 +1,5 @@
+// MapperModels.swift // Xcode Swift Utilities
+
 import Foundation
 
 public class TypeModel: Codable {

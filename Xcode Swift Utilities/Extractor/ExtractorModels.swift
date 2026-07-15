@@ -1,3 +1,5 @@
+// ExtractorModels.swift // Xcode Swift Utilities
+
 import Foundation
 
 public class SchemaModel: Codable {

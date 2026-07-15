@@ -1,3 +1,5 @@
+// FileScanner.swift // Xcode Swift Utilities
+
 import Foundation
 
 public func findSwiftFiles(at path: String, excluding: [String]) -> [URL] {

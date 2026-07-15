@@ -1,3 +1,5 @@
+// SPMScanner.swift // Xcode Swift Utilities
+
 import Foundation
 
 public func findPackageResolvedFiles(at path: String) -> [URL] {
