@@ -4,6 +4,11 @@ import SwiftParser
 
 // MARK: - Models
 
+struct SourceLocationModel: Codable {
+    var file: String
+    var line: Int
+}
+
 class TypeModel: Codable {
     var kind: String // "struct", "class", "enum", "protocol", "actor", "extension"
     var name: String
@@ -16,6 +21,7 @@ class TypeModel: Codable {
     var typealiases: [TypealiasModel] = []
     var associatedtypes: [AssociatedTypeModel] = []
     var nestedTypes: [TypeModel] = []
+    var location: SourceLocationModel?
     
     init(kind: String, name: String, accessLevel: String, inheritance: [String]) {
         self.kind = kind
@@ -30,29 +36,34 @@ struct PropertyModel: Codable {
     var specifier: String // "let" or "var"
     var name: String
     var type: String?
+    var location: SourceLocationModel?
 }
 
 struct FunctionModel: Codable {
     var accessLevel: String
     var name: String
     var signature: String
+    var location: SourceLocationModel?
 }
 
 struct InitializerModel: Codable {
     var accessLevel: String
     var signature: String
+    var location: SourceLocationModel?
 }
 
 struct TypealiasModel: Codable {
     var accessLevel: String
     var name: String
     var underlyingType: String
+    var location: SourceLocationModel?
 }
 
 struct AssociatedTypeModel: Codable {
     var accessLevel: String
     var name: String
     var inheritance: String?
+    var location: SourceLocationModel?
 }
 
 class SourceMap: Codable {
@@ -70,6 +81,9 @@ class SwiftMapVisitor: SyntaxVisitor {
     var functions: [FunctionModel] = []
     var typealiases: [TypealiasModel] = []
     
+    var currentFilePath: String = ""
+    var currentLocationConverter: SourceLocationConverter? = nil
+    
     private var typeStack: [TypeModel] = []
     
     private func addType(_ model: TypeModel) {
@@ -85,11 +99,18 @@ class SwiftMapVisitor: SyntaxVisitor {
         _ = typeStack.popLast()
     }
     
+    private func getCurrentLocation(for node: SyntaxProtocol) -> SourceLocationModel? {
+        guard let converter = currentLocationConverter else { return nil }
+        let startLoc = node.startLocation(converter: converter)
+        return SourceLocationModel(file: currentFilePath, line: startLoc.line)
+    }
+    
     override func visit(_ node: StructDeclSyntax) -> SyntaxVisitorContinueKind {
         let accessLevel = node.modifiers.trimmedDescription
         let name = node.name.text
         let inheritance = node.inheritanceClause?.inheritedTypes.map { $0.type.trimmedDescription } ?? []
         let model = TypeModel(kind: "struct", name: name, accessLevel: accessLevel, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         addType(model)
         return .visitChildren
     }
@@ -103,6 +124,7 @@ class SwiftMapVisitor: SyntaxVisitor {
         let name = node.name.text
         let inheritance = node.inheritanceClause?.inheritedTypes.map { $0.type.trimmedDescription } ?? []
         let model = TypeModel(kind: "class", name: name, accessLevel: accessLevel, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         addType(model)
         return .visitChildren
     }
@@ -116,6 +138,7 @@ class SwiftMapVisitor: SyntaxVisitor {
         let name = node.name.text
         let inheritance = node.inheritanceClause?.inheritedTypes.map { $0.type.trimmedDescription } ?? []
         let model = TypeModel(kind: "enum", name: name, accessLevel: accessLevel, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         addType(model)
         return .visitChildren
     }
@@ -129,6 +152,7 @@ class SwiftMapVisitor: SyntaxVisitor {
         let name = node.name.text
         let inheritance = node.inheritanceClause?.inheritedTypes.map { $0.type.trimmedDescription } ?? []
         let model = TypeModel(kind: "protocol", name: name, accessLevel: accessLevel, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         addType(model)
         return .visitChildren
     }
@@ -142,6 +166,7 @@ class SwiftMapVisitor: SyntaxVisitor {
         let name = node.name.text
         let inheritance = node.inheritanceClause?.inheritedTypes.map { $0.type.trimmedDescription } ?? []
         let model = TypeModel(kind: "actor", name: name, accessLevel: accessLevel, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         addType(model)
         return .visitChildren
     }
@@ -155,6 +180,7 @@ class SwiftMapVisitor: SyntaxVisitor {
         let name = node.extendedType.trimmedDescription
         let inheritance = node.inheritanceClause?.inheritedTypes.map { $0.type.trimmedDescription } ?? []
         let model = TypeModel(kind: "extension", name: name, accessLevel: accessLevel, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         addType(model)
         return .visitChildren
     }
@@ -166,11 +192,13 @@ class SwiftMapVisitor: SyntaxVisitor {
     override func visit(_ node: VariableDeclSyntax) -> SyntaxVisitorContinueKind {
         let accessLevel = node.modifiers.trimmedDescription
         let specifier = node.bindingSpecifier.text
+        let location = getCurrentLocation(for: node)
         
         for binding in node.bindings {
             let name = binding.pattern.trimmedDescription
             let type = binding.typeAnnotation?.type.trimmedDescription
-            let model = PropertyModel(accessLevel: accessLevel, specifier: specifier, name: name, type: type)
+            var model = PropertyModel(accessLevel: accessLevel, specifier: specifier, name: name, type: type)
+            model.location = location
             
             if let currentType = typeStack.last {
                 currentType.properties.append(model)
@@ -185,7 +213,8 @@ class SwiftMapVisitor: SyntaxVisitor {
         let accessLevel = node.modifiers.trimmedDescription
         let name = node.name.text
         let signature = node.signature.trimmedDescription
-        let model = FunctionModel(accessLevel: accessLevel, name: name, signature: signature)
+        var model = FunctionModel(accessLevel: accessLevel, name: name, signature: signature)
+        model.location = getCurrentLocation(for: node)
         
         if let currentType = typeStack.last {
             currentType.functions.append(model)
@@ -198,7 +227,8 @@ class SwiftMapVisitor: SyntaxVisitor {
     override func visit(_ node: InitializerDeclSyntax) -> SyntaxVisitorContinueKind {
         let accessLevel = node.modifiers.trimmedDescription
         let signature = node.signature.trimmedDescription
-        let model = InitializerModel(accessLevel: accessLevel, signature: signature)
+        var model = InitializerModel(accessLevel: accessLevel, signature: signature)
+        model.location = getCurrentLocation(for: node)
         
         if let currentType = typeStack.last {
             currentType.initializers.append(model)
@@ -218,7 +248,8 @@ class SwiftMapVisitor: SyntaxVisitor {
         let accessLevel = node.modifiers.trimmedDescription
         let name = node.name.text
         let underlyingType = node.initializer.value.trimmedDescription
-        let model = TypealiasModel(accessLevel: accessLevel, name: name, underlyingType: underlyingType)
+        var model = TypealiasModel(accessLevel: accessLevel, name: name, underlyingType: underlyingType)
+        model.location = getCurrentLocation(for: node)
         
         if let currentType = typeStack.last {
             currentType.typealiases.append(model)
@@ -232,7 +263,8 @@ class SwiftMapVisitor: SyntaxVisitor {
         let accessLevel = node.modifiers.trimmedDescription
         let name = node.name.text
         let inheritance = node.inheritanceClause?.trimmedDescription
-        let model = AssociatedTypeModel(accessLevel: accessLevel, name: name, inheritance: inheritance)
+        var model = AssociatedTypeModel(accessLevel: accessLevel, name: name, inheritance: inheritance)
+        model.location = getCurrentLocation(for: node)
         
         if let currentType = typeStack.last {
             currentType.associatedtypes.append(model)
@@ -370,19 +402,41 @@ func shouldExclude(_ path: String, patterns: [String]) -> Bool {
     return false
 }
 
+func relativePath(of fileURL: URL, relativeTo baseURL: URL) -> String {
+    let baseParts = baseURL.standardizedFileURL.pathComponents
+    let fileParts = fileURL.standardizedFileURL.pathComponents
+    
+    var commonCount = 0
+    while commonCount < baseParts.count && commonCount < fileParts.count && baseParts[commonCount] == fileParts[commonCount] {
+        commonCount += 1
+    }
+    
+    let remaining = fileParts.suffix(from: commonCount)
+    if remaining.isEmpty {
+        return fileURL.lastPathComponent
+    }
+    return remaining.joined(separator: "/")
+}
+
 // MARK: - Text Printer
 
 class SourceMapPrinter {
     let sourceMap: SourceMap
+    let isSummary: Bool
     var indentLevel = 0
     
-    init(sourceMap: SourceMap) {
+    init(sourceMap: SourceMap, isSummary: Bool) {
         self.sourceMap = sourceMap
+        self.isSummary = isSummary
     }
     
     func printWithIndent(_ text: String) {
         let indent = String(repeating: "    ", count: indentLevel)
         print("\(indent)\(text)")
+    }
+    
+    private func commentStr(for location: SourceLocationModel?) -> String {
+        return location.map { " // \($0.file):\($0.line)" } ?? ""
     }
     
     func printMap() {
@@ -409,8 +463,15 @@ class SourceMapPrinter {
         let prefix = type.accessLevel.isEmpty ? "" : "\(type.accessLevel) "
         let inheritanceStr = type.inheritance.isEmpty ? "" : " : \(type.inheritance.joined(separator: ", "))"
         let kindKeyword = type.kind
+        let locComment = commentStr(for: type.location)
         
-        printWithIndent("\(prefix)\(kindKeyword) \(type.name)\(inheritanceStr) {")
+        printWithIndent("\(prefix)\(kindKeyword) \(type.name)\(inheritanceStr) {\(locComment)")
+        
+        if isSummary {
+            printWithIndent("}")
+            return
+        }
+        
         indentLevel += 1
         
         for enumCase in type.cases {
@@ -421,7 +482,8 @@ class SourceMapPrinter {
         for assoc in type.associatedtypes {
             let assocPrefix = assoc.accessLevel.isEmpty ? "" : "\(assoc.accessLevel) "
             let inheritanceStr = (assoc.inheritance?.isEmpty ?? true) ? "" : " : \(assoc.inheritance!)"
-            printWithIndent("\(assocPrefix)associatedtype \(assoc.name)\(inheritanceStr)")
+            let assocComment = commentStr(for: assoc.location)
+            printWithIndent("\(assocPrefix)associatedtype \(assoc.name)\(inheritanceStr)\(assocComment)")
         }
         
         for ta in type.typealiases {
@@ -434,7 +496,8 @@ class SourceMapPrinter {
         
         for initDecl in type.initializers {
             let initPrefix = initDecl.accessLevel.isEmpty ? "" : "\(initDecl.accessLevel) "
-            printWithIndent("\(initPrefix)init\(initDecl.signature)")
+            let initComment = commentStr(for: initDecl.location)
+            printWithIndent("\(initPrefix)init\(initDecl.signature)\(initComment)")
         }
         
         for function in type.functions {
@@ -452,21 +515,94 @@ class SourceMapPrinter {
     
     func printProperty(_ prop: PropertyModel) {
         let prefix = prop.accessLevel.isEmpty ? "" : "\(prop.accessLevel) "
+        let locComment = commentStr(for: prop.location)
         if let type = prop.type {
-            printWithIndent("\(prefix)\(prop.specifier) \(prop.name): \(type)")
+            printWithIndent("\(prefix)\(prop.specifier) \(prop.name): \(type)\(locComment)")
         } else {
-            printWithIndent("\(prefix)\(prop.specifier) \(prop.name)")
+            printWithIndent("\(prefix)\(prop.specifier) \(prop.name)\(locComment)")
         }
     }
     
     func printFunction(_ function: FunctionModel) {
         let prefix = function.accessLevel.isEmpty ? "" : "\(function.accessLevel) "
-        printWithIndent("\(prefix)func \(function.name)\(function.signature)")
+        let locComment = commentStr(for: function.location)
+        printWithIndent("\(prefix)func \(function.name)\(function.signature)\(locComment)")
     }
     
     func printTypealias(_ ta: TypealiasModel) {
         let prefix = ta.accessLevel.isEmpty ? "" : "\(ta.accessLevel) "
-        printWithIndent("\(prefix)typealias \(ta.name) = \(ta.underlyingType)")
+        let locComment = commentStr(for: ta.location)
+        printWithIndent("\(prefix)typealias \(ta.name) = \(ta.underlyingType)\(locComment)")
+    }
+}
+
+// MARK: - Mermaid Diagram Printer
+
+class MermaidPrinter {
+    let sourceMap: SourceMap
+    let isSummary: Bool
+    
+    init(sourceMap: SourceMap, isSummary: Bool) {
+        self.sourceMap = sourceMap
+        self.isSummary = isSummary
+    }
+    
+    func printDiagram() {
+        print("classDiagram")
+        
+        var relationships: [String] = []
+        
+        func printType(_ type: TypeModel) {
+            print("    class \(type.name) {")
+            
+            if !isSummary {
+                for prop in type.properties {
+                    let pVis = mermaidVisibility(for: prop.accessLevel)
+                    let typeStr = prop.type.map { ": \($0)" } ?? ""
+                    print("        \(pVis)\(prop.specifier) \(prop.name)\(typeStr)")
+                }
+                
+                for initDecl in type.initializers {
+                    let iVis = mermaidVisibility(for: initDecl.accessLevel)
+                    print("        \(iVis)init\(initDecl.signature)")
+                }
+                
+                for function in type.functions {
+                    let fVis = mermaidVisibility(for: function.accessLevel)
+                    print("        \(fVis)func \(function.name)\(function.signature)")
+                }
+            }
+            
+            print("    }")
+            
+            for base in type.inheritance {
+                relationships.append("    \(base) <|-- \(type.name)")
+            }
+            
+            for nested in type.nestedTypes {
+                printType(nested)
+                relationships.append("    \(type.name) +-- \(nested.name)")
+            }
+        }
+        
+        for type in sourceMap.types {
+            printType(type)
+        }
+        
+        for rel in relationships {
+            print(rel)
+        }
+    }
+    
+    private func mermaidVisibility(for accessLevel: String) -> String {
+        let level = accessLevel.lowercased()
+        if level.contains("public") || level.contains("open") {
+            return "+"
+        } else if level.contains("private") || level.contains("fileprivate") {
+            return "-"
+        } else {
+            return "~"
+        }
     }
 }
 
@@ -474,6 +610,8 @@ class SourceMapPrinter {
 
 let arguments = CommandLine.arguments
 var isJSON = false
+var isSummary = false
+var isMermaid = false
 var excludes: [String] = ["Tests", "Mocks", "Mock", "test", "mock", "Spec", "Spec.swift"]
 var path: String? = nil
 
@@ -485,6 +623,10 @@ while idx < args.count {
     let arg = args[idx]
     if arg == "--json" {
         isJSON = true
+    } else if arg == "--summary" {
+        isSummary = true
+    } else if arg == "--mermaid" {
+        isMermaid = true
     } else if arg == "--exclude" {
         if idx + 1 < args.count {
             excludes = args[idx + 1].split(separator: ",").map { String($0) }
@@ -502,7 +644,7 @@ while idx < args.count {
 }
 
 guard let targetPath = path else {
-    fputs("Usage: XCSwiftMap [--json] [--exclude <patterns>] <file-or-directory-path>\n", stderr)
+    fputs("Usage: XCSwiftMap [--json] [--summary] [--mermaid] [--exclude <patterns>] <file-or-directory-path>\n", stderr)
     exit(1)
 }
 
@@ -514,10 +656,16 @@ if swiftFiles.isEmpty {
 }
 
 let visitor = SwiftMapVisitor(viewMode: .sourceAccurate)
+let baseFolderURL = URL(fileURLWithPath: targetPath)
 
 for fileURL in swiftFiles {
     if let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) {
         let sourceFile = Parser.parse(source: fileContent)
+        
+        let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
+        visitor.currentFilePath = relPath
+        visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        
         visitor.walk(sourceFile)
     }
 }
@@ -536,7 +684,10 @@ if isJSON {
     if let data = try? encoder.encode(sourceMap), let jsonString = String(data: data, encoding: .utf8) {
         print(jsonString)
     }
+} else if isMermaid {
+    let printer = MermaidPrinter(sourceMap: sourceMap, isSummary: isSummary)
+    printer.printDiagram()
 } else {
-    let printer = SourceMapPrinter(sourceMap: sourceMap)
+    let printer = SourceMapPrinter(sourceMap: sourceMap, isSummary: isSummary)
     printer.printMap()
 }
