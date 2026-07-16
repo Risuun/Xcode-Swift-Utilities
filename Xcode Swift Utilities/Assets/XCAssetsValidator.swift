@@ -124,13 +124,58 @@ public class XCAssetsValidator {
     private func swiftSafeIdentifier(from assetName: String) -> String {
         // If namespaced, only use the last component for identifier check (e.g. "Folder/Asset" -> "asset")
         let lastComponent = assetName.components(separatedBy: "/").last ?? assetName
-        let clean = lastComponent.components(separatedBy: CharacterSet.alphanumerics.inverted)
-            .filter { !$0.isEmpty }
-        guard !clean.isEmpty else { return lastComponent }
-        var result = clean[0].lowercased()
-        for component in clean.dropFirst() {
-            result += component.capitalized
+        guard !lastComponent.isEmpty else { return "" }
+        
+        var words: [String] = []
+        var currentWord = ""
+        
+        let chars = Array(lastComponent)
+        for i in 0..<chars.count {
+            let char = chars[i]
+            
+            if !char.isLetter && !char.isNumber {
+                // Word boundary separator
+                if !currentWord.isEmpty {
+                    words.append(currentWord)
+                    currentWord = ""
+                }
+            } else if char.isUppercase {
+                // Check for lowercase-to-uppercase transition (e.g., "rI")
+                // or uppercase-to-lowercase transition for acronyms (e.g., "LS" in "URLSession" where we split before "S")
+                if !currentWord.isEmpty {
+                    let prevChar = chars[i - 1]
+                    let hasNextLowercase = (i + 1 < chars.count) && chars[i + 1].isLowercase
+                    
+                    if prevChar.isLowercase || prevChar.isNumber || hasNextLowercase {
+                        words.append(currentWord)
+                        currentWord = String(char)
+                        continue
+                    }
+                }
+                currentWord.append(char)
+            } else {
+                currentWord.append(char)
+            }
         }
+        
+        if !currentWord.isEmpty {
+            words.append(currentWord)
+        }
+        
+        guard !words.isEmpty else { return lastComponent }
+        
+        // First word is lowercase
+        var result = words[0].lowercased()
+        
+        // Subsequent words are capitalized
+        for word in words.dropFirst() {
+            if !word.isEmpty {
+                let firstChar = String(word.prefix(1)).uppercased()
+                let rest = String(word.dropFirst()).lowercased()
+                result += firstChar + rest
+            }
+        }
+        
         return result
     }
     
