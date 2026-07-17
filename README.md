@@ -1,6 +1,6 @@
 ## Description
 
-I developed these tools for Google Antigravity to use directly in my projects to help keep token counts down.
+These tools help cut down on token count in Google Antigravity. I developed this bundle in coordination with Antigravity.
 
 ## Installation
 - Compile and add binaries to ~Users/Username/.local/bin
