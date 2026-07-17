@@ -1,4 +1,9 @@
-Add to AGENTS.md:
+I developed these tools for Google Antigravity to use directly in my projects to help keep token counts down.
+
+#Installation
+- Compile and add binaries to ~Users/Username/.local/bin
+- Add export PATH="$HOME/.local/bin:$PATH" to your .zshrc file using nano ~/.zshrc
+- Add the following to AGENTS.md to give Antigravity the information it needs to use the tools:
 
 ## Swift Code Mapping & Architecture Discovery
 Whenever you need to analyze, explore, or understand Swift codebases, targets, or files, you MUST use `XCSwiftMap` to extract a high-signal structural map rather than wasting context tokens reading raw lines directly.
