@@ -37,6 +37,12 @@ func main() {
     } else if args[0] == "git-diff" {
         args.removeFirst()
         runGitDiff(args: args)
+    } else if args[0] == "locate" {
+        args.removeFirst()
+        runLocate(args: args)
+    } else if args[0] == "preview-render" {
+        args.removeFirst()
+        runPreviewRender(args: args)
     } else if args[0] == "xcassets" {
         args.removeFirst()
         runXCAssets(args: args)
