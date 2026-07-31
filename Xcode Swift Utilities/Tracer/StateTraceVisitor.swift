@@ -76,24 +76,22 @@ public class StateTraceVisitor: SyntaxVisitor {
     public override func visit(_ node: VariableDeclSyntax) -> SyntaxVisitorContinueKind {
         guard let view = currentView else { return .skipChildren }
         
-        var wrapperName: String? = nil
+        var wrapperName: String = "Property"
         for attribute in node.attributes {
             if case .attribute(let attr) = attribute {
                 let name = attr.attributeName.trimmedDescription
-                if name == "State" || name == "Binding" || name == "StateObject" || name == "ObservedObject" || name == "EnvironmentObject" || name == "Environment" || name == "Query" || name == "Model" {
+                if name == "State" || name == "Binding" || name == "StateObject" || name == "ObservedObject" || name == "EnvironmentObject" || name == "Environment" || name == "Query" || name == "Model" || name == "Bindable" || name == "FocusState" {
                     wrapperName = name
                     break
                 }
             }
         }
         
-        if let wrapper = wrapperName {
-            for binding in node.bindings {
-                let name = binding.pattern.trimmedDescription
-                let type = binding.typeAnnotation?.type.trimmedDescription ?? "Unknown"
-                let prop = StateVariableModel(wrapper: wrapper, name: name, type: type, location: getCurrentLocation(for: node))
-                view.variables.append(prop)
-            }
+        for binding in node.bindings {
+            let name = binding.pattern.trimmedDescription
+            let type = binding.typeAnnotation?.type.trimmedDescription ?? "Implicit"
+            let prop = StateVariableModel(wrapper: wrapperName, name: name, type: type, location: getCurrentLocation(for: node))
+            view.variables.append(prop)
         }
         
         return .skipChildren

@@ -25,7 +25,7 @@ func main() {
     } else if args[0] == "view-skeleton" {
         args.removeFirst()
         runViewSkeleton(args: args)
-    } else if args[0] == "trace-state" {
+    } else if args[0] == "trace-state" || args[0] == "scope-check" {
         args.removeFirst()
         runTraceState(args: args)
     } else if args[0] == "spm-summary" {
@@ -51,6 +51,7 @@ Usage:
   XCSwiftMap [--json] [--summary] [--mermaid] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap view-skeleton <file-path>
+  XCSwiftMap scope-check [--json] <directory-or-file-path>
   XCSwiftMap trace-state [--json] <directory-or-file-path>
   XCSwiftMap spm-summary [--json] [directory-path]
   XCSwiftMap audit-memory [--json] <directory-or-file-path>
