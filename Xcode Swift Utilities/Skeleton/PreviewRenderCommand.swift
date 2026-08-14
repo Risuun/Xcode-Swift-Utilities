@@ -1,4 +1,4 @@
-// PreviewRenderCommand.swift // Xcode Swift Utilities //
+// PreviewRenderCommand.swift // Skeleton
 
 import Foundation
 import SwiftSyntax
@@ -19,6 +19,11 @@ public class PreviewVisitor: SyntaxVisitor {
 }
 
 func runPreviewRender(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap preview-render [--png] <file-path>")
+        exit(0)
+    }
+
     guard !args.isEmpty else {
         fputs("Usage: XCSwiftMap preview-render [--png] <file-path>\n", stderr)
         exit(1)
@@ -35,13 +40,14 @@ func runPreviewRender(args: [String]) {
         }
     }
 
-    guard let targetPath = filePath, FileManager.default.fileExists(atPath: targetPath) else {
-        fputs("Error: Valid file path required for preview-render\n", stderr)
+    guard let rawPath = filePath else {
+        fputs("Usage: XCSwiftMap preview-render [--png] <file-path>\n", stderr)
         exit(1)
     }
 
-    guard let fileContent = try? String(contentsOfFile: targetPath, encoding: .utf8) else {
-        fputs("Error: Unable to read file '\(targetPath)'\n", stderr)
+    let resolvedPath = resolveOrExitTarget(rawPath)
+    guard let fileContent = try? String(contentsOfFile: resolvedPath, encoding: .utf8) else {
+        fputs("[ERROR: Target not found: \(rawPath)]\n", stderr)
         exit(1)
     }
 
@@ -49,20 +55,17 @@ func runPreviewRender(args: [String]) {
     let visitor = PreviewVisitor(viewMode: .sourceAccurate)
     visitor.walk(sourceFile)
 
-    let fileName = URL(fileURLWithPath: targetPath).lastPathComponent
-    print("=== SwiftUI View Preview Hierarchy ===")
-    print("Target File: \(fileName)")
-    print("Found Previews: \(visitor.previewCount)")
-    for name in visitor.previewNames {
-        print("  • \(name)")
-    }
-    print("")
-
     let finder = ViewSkeletonFinder(viewMode: .sourceAccurate)
     finder.walk(sourceFile)
 
+    if !finder.hasFoundView {
+        let leaf = URL(fileURLWithPath: resolvedPath).lastPathComponent
+        fputs("[ERROR: No SwiftUI view body in \(leaf)]\n", stderr)
+        exit(1)
+    }
+
     if wantPNG {
-        let outputPath = "/tmp/preview_\(URL(fileURLWithPath: targetPath).deletingPathExtension().lastPathComponent).png"
+        let outputPath = "/tmp/preview_\(URL(fileURLWithPath: resolvedPath).deletingPathExtension().lastPathComponent).png"
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
         process.arguments = ["simctl", "io", "booted", "screenshot", outputPath]
@@ -71,16 +74,12 @@ func runPreviewRender(args: [String]) {
             try process.run()
             process.waitUntilExit()
             if FileManager.default.fileExists(atPath: outputPath) {
-                print("\n[PNG Screenshot Generated]: \(outputPath)")
+                print("[PNG Screenshot Generated]: \(outputPath)")
             } else {
-                print("\nNote: Boot an iOS/macOS simulator to save live PNG render to '\(outputPath)'.")
+                print("Note: Boot an iOS/macOS simulator to save live PNG render to '\(outputPath)'.")
             }
         } catch {
             print("Unable to capture simulator screenshot: \(error)")
         }
-    }
-
-    if !finder.hasFoundView {
-        print("No SwiftUI View 'body' declaration found in '\(targetPath)'.")
     }
 }

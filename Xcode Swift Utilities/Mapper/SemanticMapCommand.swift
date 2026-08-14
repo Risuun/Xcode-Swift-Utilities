@@ -1,10 +1,15 @@
-// SemanticMapCommand.swift // Xcode Swift Utilities
+// SemanticMapCommand.swift // Mapper
 
 import Foundation
 import SwiftSyntax
 import SwiftParser
 
 func runSemanticMap(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        printUsage(toStderr: false)
+        exit(0)
+    }
+
     var isJSON = false
     var isSummary = false
     var isMermaid = false
@@ -37,13 +42,13 @@ func runSemanticMap(args: [String]) {
     }
     
     guard let targetPath = path else {
-        printUsage()
+        printUsage(toStderr: true)
         exit(1)
     }
     
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: excludes)
     if swiftFiles.isEmpty {
-        fputs("No Swift files found at: \(targetPath)\n", stderr)
+        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
         exit(1)
     }
     

@@ -1,10 +1,15 @@
-// ExtractSchemaCommand.swift // Xcode Swift Utilities
+// ExtractSchemaCommand.swift // Extractor
 
 import Foundation
 import SwiftSyntax
 import SwiftParser
 
 func runExtractSchema(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>")
+        exit(0)
+    }
+
     var isJSON = false
     var excludes: [String] = ["Tests", "Mocks", "Mock", "test", "mock", "Spec", "Spec.swift"]
     var path: String? = nil
@@ -37,7 +42,7 @@ func runExtractSchema(args: [String]) {
     
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: excludes)
     if swiftFiles.isEmpty {
-        fputs("No Swift files found at: \(targetPath)\n", stderr)
+        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
         exit(1)
     }
     
@@ -84,6 +89,12 @@ func runExtractSchema(args: [String]) {
             print(jsonString)
         }
     } else {
+        if outputModels.isEmpty && visitor.queries.isEmpty {
+            let leaf = URL(fileURLWithPath: targetPath).lastPathComponent
+            print("[OK: No schemas in \(leaf)]")
+            return
+        }
+
         // Text format
         for model in outputModels {
             let locStr = model.location.map { " // \($0.file):\($0.line)" } ?? ""

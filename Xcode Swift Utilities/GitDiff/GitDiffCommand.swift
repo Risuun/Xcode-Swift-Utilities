@@ -1,10 +1,15 @@
-// GitDiffCommand.swift // Xcode Swift Utilities
+// GitDiffCommand.swift // GitDiff
 
 import Foundation
 import SwiftSyntax
 import SwiftParser
 
 func runGitDiff(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap git-diff [--json] [--branch <branch>]")
+        exit(0)
+    }
+
     var isJSON = false
     var cleanArgs: [String] = []
     

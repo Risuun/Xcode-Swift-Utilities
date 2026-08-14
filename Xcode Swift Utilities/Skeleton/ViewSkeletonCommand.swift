@@ -1,19 +1,25 @@
-// ViewSkeletonCommand.swift // Xcode Swift Utilities
+// ViewSkeletonCommand.swift // Skeleton
 
 import Foundation
 import SwiftSyntax
 import SwiftParser
 
 func runViewSkeleton(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap view-skeleton <file-path>")
+        exit(0)
+    }
+
     guard args.count > 0 else {
         fputs("Usage: XCSwiftMap view-skeleton <file-path>\n", stderr)
         exit(1)
     }
     let targetPath = args[0]
-    let fileURL = URL(fileURLWithPath: targetPath)
+    let resolvedPath = resolveOrExitTarget(targetPath)
+    let fileURL = URL(fileURLWithPath: resolvedPath)
     
     guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
-        fputs("Error: Could not read file at \(targetPath)\n", stderr)
+        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
         exit(1)
     }
     
@@ -22,7 +28,8 @@ func runViewSkeleton(args: [String]) {
     finder.walk(sourceFile)
     
     if !finder.hasFoundView {
-        fputs("No SwiftUI views with a body property found in \(targetPath)\n", stderr)
+        let leaf = fileURL.lastPathComponent
+        fputs("[ERROR: No SwiftUI view body in \(leaf)]\n", stderr)
         exit(1)
     }
 }

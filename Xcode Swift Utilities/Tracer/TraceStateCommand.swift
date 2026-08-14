@@ -1,10 +1,15 @@
-// TraceStateCommand.swift // Xcode Swift Utilities
+// TraceStateCommand.swift // Tracer
 
 import Foundation
 import SwiftSyntax
 import SwiftParser
 
 func runTraceState(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap trace-state [--json] <directory-or-file-path>")
+        exit(0)
+    }
+
     var isJSON = false
     var path: String? = nil
     
@@ -29,7 +34,7 @@ func runTraceState(args: [String]) {
     
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("No Swift files found at: \(targetPath)\n", stderr)
+        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
         exit(1)
     }
     
@@ -53,6 +58,12 @@ func runTraceState(args: [String]) {
             print(jsonString)
         }
     } else {
+        if visitor.views.isEmpty || visitor.views.allSatisfy({ $0.variables.isEmpty }) {
+            let leaf = URL(fileURLWithPath: targetPath).lastPathComponent
+            print("[OK: No state mutations in \(leaf)]")
+            return
+        }
+
         for view in visitor.views {
             let locStr = view.location.map { " // \($0.file):\($0.line)" } ?? ""
             print("View: \(view.name)\(locStr)")

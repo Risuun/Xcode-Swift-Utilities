@@ -1,4 +1,4 @@
-// LocateCommand.swift // Xcode Swift Utilities //
+// LocateCommand.swift // Common
 
 import Foundation
 import SwiftSyntax
@@ -76,6 +76,11 @@ public class SymbolLocatorVisitor: SyntaxVisitor {
 }
 
 func runLocate(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]")
+        exit(0)
+    }
+
     var isJSON = false
     var symbol: String? = nil
     var path: String = "."
@@ -100,7 +105,7 @@ func runLocate(args: [String]) {
 
     let swiftFiles = findSwiftFiles(at: path, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("No Swift files found at path: \(path)\n", stderr)
+        fputs("[ERROR: Target not found: \(path)]\n", stderr)
         exit(1)
     }
 
@@ -124,9 +129,9 @@ func runLocate(args: [String]) {
             print(json)
         }
     } else {
-        print("=== AST Symbol Locator: '\(targetSymbol)' (\(visitor.results.count) matches) ===")
         for res in visitor.results {
-            print("  [\(res.kind)] \(res.name) -> \(res.file):\(res.line)")
+            let leaf = URL(fileURLWithPath: res.file).lastPathComponent
+            print("\(res.name)|\(res.kind)|\(leaf):\(res.line)")
         }
     }
 }

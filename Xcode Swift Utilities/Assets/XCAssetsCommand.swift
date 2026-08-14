@@ -1,8 +1,13 @@
-// XCAssetsCommand.swift // Xcode Swift Utilities
+// XCAssetsCommand.swift // Assets
 
 import Foundation
 
 func runXCAssets(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap xcassets [--json] [--exclude <patterns>] <directory-path>")
+        exit(0)
+    }
+    
     var isJSON = false
     var excludes: [String] = ["Tests", "Mocks", "Mock", "test", "mock", "Spec", "Spec.swift"]
     var path: String? = nil
@@ -33,6 +38,7 @@ func runXCAssets(args: [String]) {
         exit(1)
     }
     
-    let validator = XCAssetsValidator(projectPath: targetPath, excludes: excludes)
+    let resolvedPath = resolveOrExitTarget(targetPath)
+    let validator = XCAssetsValidator(projectPath: resolvedPath, excludes: excludes)
     validator.run(isJSON: isJSON)
 }

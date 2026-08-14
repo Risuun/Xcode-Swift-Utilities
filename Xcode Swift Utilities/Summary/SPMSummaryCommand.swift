@@ -1,8 +1,13 @@
-// SPMSummaryCommand.swift // Xcode Swift Utilities
+// SPMSummaryCommand.swift // Summary
 
 import Foundation
 
 func runSPMSummary(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap spm-summary [--json] [directory-path]")
+        exit(0)
+    }
+
     var isJSON = false
     var path: String? = nil
     
@@ -20,11 +25,12 @@ func runSPMSummary(args: [String]) {
         idx += 1
     }
     
-    let targetPath = path ?? FileManager.default.currentDirectoryPath
-    let resolvedFiles = findPackageResolvedFiles(at: targetPath)
+    let rawPath = path ?? FileManager.default.currentDirectoryPath
+    let resolvedPath = resolveOrExitTarget(rawPath)
+    let resolvedFiles = findPackageResolvedFiles(at: resolvedPath)
     
     if resolvedFiles.isEmpty {
-        fputs("No Package.resolved files found under: \(targetPath)\n", stderr)
+        fputs("[ERROR: Target not found: \(rawPath)]\n", stderr)
         exit(1)
     }
     
@@ -45,7 +51,7 @@ func runSPMSummary(args: [String]) {
     } else {
         let sorted = allDeps.sorted(by: { $0.key < $1.key })
         for (pkg, version) in sorted {
-            print("\(pkg) v\(version)")
+            print("\(pkg)|\(version)")
         }
     }
 }

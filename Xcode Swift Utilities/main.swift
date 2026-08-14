@@ -15,8 +15,13 @@ func main() {
     }
     
     guard !args.isEmpty else {
-        printUsage()
+        printUsage(toStderr: true)
         exit(1)
+    }
+    
+    if args[0] == "--help" || args[0] == "-h" {
+        printUsage(toStderr: false)
+        exit(0)
     }
     
     if args[0] == "extract-schema" {
@@ -51,10 +56,11 @@ func main() {
     }
 }
 
-func printUsage() {
-    fputs("""
+func printUsage(toStderr: Bool = false) {
+    let usageText = """
 Usage:
   XCSwiftMap [--json] [--summary] [--mermaid] [--exclude <patterns>] <file-or-directory-path>
+  XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]
   XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap view-skeleton <file-path>
   XCSwiftMap scope-check [--json] <directory-or-file-path>
@@ -62,8 +68,14 @@ Usage:
   XCSwiftMap spm-summary [--json] [directory-path]
   XCSwiftMap audit-memory [--json] <directory-or-file-path>
   XCSwiftMap git-diff [--json] [--branch <branch>]
+  XCSwiftMap preview-render [--png] <file-path>
   XCSwiftMap xcassets [--json] [--exclude <patterns>] <directory-path>
-""", stderr)
+"""
+    if toStderr {
+        fputs(usageText + "\n", stderr)
+    } else {
+        print(usageText)
+    }
 }
 
 main()

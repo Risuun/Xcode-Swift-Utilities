@@ -1,4 +1,4 @@
-// MemoryAuditVisitor.swift // Xcode Swift Utilities
+// MemoryAuditVisitor.swift // Auditor
 
 import Foundation
 import SwiftSyntax
@@ -38,7 +38,7 @@ public class MemoryAuditVisitor: SyntaxVisitor {
     private func getCurrentLocation(for node: SyntaxProtocol) -> SourceLocationModel? {
         guard let converter = currentLocationConverter else { return nil }
         let startLoc = node.startLocation(converter: converter)
-        return SourceLocationModel(file: currentFilePath, line: startLoc.line)
+        return SourceLocationModel(file: currentFilePath, line: startLoc.line, column: startLoc.column)
     }
     
     public override func visit(_ node: ClassDeclSyntax) -> SyntaxVisitorContinueKind {

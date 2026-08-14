@@ -1,4 +1,4 @@
-// XCAssetsValidator.swift // Xcode Swift Utilities
+// XCAssetsValidator.swift // Assets
 
 import Foundation
 import SwiftSyntax
@@ -95,26 +95,14 @@ public class XCAssetsValidator {
                 print(jsonString)
             }
         } else {
-            print("=== XCAssets Analysis Report ===")
-            print("Project Path: \(projectPath)")
-            print("")
-            
-            print("--- Unused Assets (\(unusedAssets.count)) ---")
-            if unusedAssets.isEmpty {
-                print("No unused assets found.")
+            if unusedAssets.isEmpty && missingReferences.isEmpty {
+                print("[OK: 0 unused, 0 missing assets]")
             } else {
                 for asset in unusedAssets.sorted(by: { $0.name < $1.name }) {
-                    print("  [\(asset.type)] \(asset.name) // \(asset.path)")
+                    print("\(asset.name)|unused")
                 }
-            }
-            print("")
-            
-            print("--- Missing Asset References (\(missingReferences.count)) ---")
-            if missingReferences.isEmpty {
-                print("No missing asset references found.")
-            } else {
                 for ref in missingReferences.sorted(by: { $0.name < $1.name }) {
-                    print("  Reference \"\(ref.name)\" not found // \(ref.file):\(ref.line)")
+                    print("\(ref.name)|missing")
                 }
             }
         }

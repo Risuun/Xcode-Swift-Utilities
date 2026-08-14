@@ -1,10 +1,15 @@
-// AuditMemoryCommand.swift // Xcode Swift Utilities
+// AuditMemoryCommand.swift // Auditor
 
 import Foundation
 import SwiftSyntax
 import SwiftParser
 
 func runAuditMemory(args: [String]) {
+    if args.contains("--help") || args.contains("-h") {
+        print("Usage: XCSwiftMap audit-memory [--json] <directory-or-file-path>")
+        exit(0)
+    }
+    
     var isJSON = false
     var path: String? = nil
     
@@ -29,7 +34,7 @@ func runAuditMemory(args: [String]) {
     
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("No Swift files found at: \(targetPath)\n", stderr)
+        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
         exit(1)
     }
     
@@ -54,10 +59,12 @@ func runAuditMemory(args: [String]) {
         }
     } else {
         if visitor.violations.isEmpty {
-            print("No retain cycle violations found.")
+            let leaf = URL(fileURLWithPath: targetPath).lastPathComponent
+            print("[OK: \(leaf)]")
         } else {
             for violation in visitor.violations {
-                print("Line \(violation.location.line): Escaping closure references self without [weak self] or [unowned self] capture list // \(violation.location.file):\(violation.location.line)")
+                let leaf = URL(fileURLWithPath: violation.location.file).lastPathComponent
+                print("\(leaf):\(violation.location.line):\(violation.location.column): warning: strong self capture in closure")
             }
         }
     }
