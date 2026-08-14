@@ -24,7 +24,13 @@ func main() {
         exit(0)
     }
     
-    if args[0] == "extract-schema" {
+    if args[0] == "search" {
+        args.removeFirst()
+        runSearch(args: args)
+    } else if args[0] == "index" {
+        args.removeFirst()
+        runIndex(args: args)
+    } else if args[0] == "extract-schema" {
         args.removeFirst()
         runExtractSchema(args: args)
     } else if args[0] == "view-skeleton" {
@@ -60,6 +66,8 @@ func printUsage(toStderr: Bool = false) {
     let usageText = """
 Usage:
   XCSwiftMap [--json] [--summary] [--mermaid] [--exclude <patterns>] <file-or-directory-path>
+  XCSwiftMap search "<concept>" [path] [--limit <n>] [--json]
+  XCSwiftMap index [path]
   XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]
   XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap view-skeleton <file-path>

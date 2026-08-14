@@ -86,6 +86,12 @@ public func findSwiftFiles(at path: String, excluding: [String]) -> [URL] {
 }
 
 public func shouldExclude(_ path: String, patterns: [String]) -> Bool {
+    let defaultIgnores = [".build", "DerivedData", ".xcodeproj", ".xcworkspace", ".swiftpm", "/Pods/", "/Carthage/", "/.git/"]
+    for ignore in defaultIgnores {
+        if path.contains(ignore) {
+            return true
+        }
+    }
     for pattern in patterns {
         if path.lowercased().contains(pattern.lowercased()) {
             return true
