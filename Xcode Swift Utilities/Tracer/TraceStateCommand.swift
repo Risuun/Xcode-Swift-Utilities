@@ -38,33 +38,37 @@ func runTraceState(args: [String]) {
         exit(1)
     }
     
-    let visitor = StateTraceVisitor(viewMode: .sourceAccurate)
-    let baseFolderURL = URL(fileURLWithPath: targetPath)
+    let baseFolderURL = URL(fileURLWithPath: resolveOrExitTarget(targetPath))
     
-    for fileURL in swiftFiles {
-        if let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: fileContent)
-            let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
-            visitor.currentFilePath = relPath
-            visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            visitor.walk(sourceFile)
+    let views = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [ViewStateModel] in
+        guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "trace-state", queryOrModel: nil) else {
+            return []
         }
+        guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: fileContent)
+        let visitor = StateTraceVisitor(viewMode: .sourceAccurate)
+        let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
+        visitor.currentFilePath = relPath
+        visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        visitor.walk(sourceFile)
+        return visitor.views
     }
     
     if isJSON {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(visitor.views), let jsonString = String(data: data, encoding: .utf8) {
+        if let data = try? encoder.encode(views), let jsonString = String(data: data, encoding: .utf8) {
             print(jsonString)
         }
     } else {
-        if visitor.views.isEmpty || visitor.views.allSatisfy({ $0.variables.isEmpty }) {
-            let leaf = URL(fileURLWithPath: targetPath).lastPathComponent
-            print("[OK: No state mutations in \(leaf)]")
+        if views.isEmpty || views.allSatisfy({ $0.variables.isEmpty }) {
+            print("[OK: No active matches found for 'State' across \(swiftFiles.count) scanned files]")
             return
         }
 
-        for view in visitor.views {
+        for view in views {
             let locStr = view.location.map { " // \($0.file):\($0.line)" } ?? ""
             print("View: \(view.name)\(locStr)")
             for v in view.variables {

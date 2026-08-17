@@ -52,28 +52,52 @@ func runSemanticMap(args: [String]) {
         exit(1)
     }
     
-    let visitor = SwiftMapVisitor(viewMode: .sourceAccurate)
-    let baseFolderURL = URL(fileURLWithPath: targetPath)
-    
-    for fileURL in swiftFiles {
-        if let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: fileContent)
-            
-            let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
-            visitor.currentFilePath = relPath
-            visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            
-            visitor.walk(sourceFile)
-        }
+    struct MapFileScanResult {
+        var types: [TypeModel]
+        var properties: [PropertyModel]
+        var functions: [FunctionModel]
+        var typealiases: [TypealiasModel]
     }
     
-    let consolidatedTypes = consolidateSourceMap(types: visitor.types)
+    let baseFolderURL = URL(fileURLWithPath: resolveOrExitTarget(targetPath))
+    
+    let scanResults = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [MapFileScanResult] in
+        guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: fileContent)
+        let visitor = SwiftMapVisitor(viewMode: .sourceAccurate)
+        let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
+        visitor.currentFilePath = relPath
+        visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        visitor.walk(sourceFile)
+        return [MapFileScanResult(
+            types: visitor.types,
+            properties: visitor.properties,
+            functions: visitor.functions,
+            typealiases: visitor.typealiases
+        )]
+    }
+    
+    var allTypes: [TypeModel] = []
+    var allProperties: [PropertyModel] = []
+    var allFunctions: [FunctionModel] = []
+    var allTypealiases: [TypealiasModel] = []
+    
+    for item in scanResults {
+        allTypes.append(contentsOf: item.types)
+        allProperties.append(contentsOf: item.properties)
+        allFunctions.append(contentsOf: item.functions)
+        allTypealiases.append(contentsOf: item.typealiases)
+    }
+    
+    let consolidatedTypes = consolidateSourceMap(types: allTypes)
     
     let sourceMap = SourceMap()
     sourceMap.types = consolidatedTypes
-    sourceMap.properties = visitor.properties
-    sourceMap.functions = visitor.functions
-    sourceMap.typealiases = visitor.typealiases
+    sourceMap.properties = allProperties
+    sourceMap.functions = allFunctions
+    sourceMap.typealiases = allTypealiases
     
     if isJSON {
         let encoder = JSONEncoder()

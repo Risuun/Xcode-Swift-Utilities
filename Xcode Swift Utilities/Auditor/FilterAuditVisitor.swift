@@ -239,28 +239,33 @@ public func runAuditFilters(args: [String]) {
         exit(1)
     }
     
-    let visitor = FilterAuditVisitor(viewMode: .sourceAccurate, targetModel: targetModel)
-    let baseURL = URL(fileURLWithPath: path)
+    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(path))
     
-    for fileURL in swiftFiles {
-        if let content = try? String(contentsOfFile: fileURL.path, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: content)
-            let relPath = relativePath(of: fileURL, relativeTo: baseURL)
-            let converter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            visitor.resetForNewFile(filePath: relPath, converter: converter)
-            visitor.walk(sourceFile)
+    let results = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [FilterAuditResult] in
+        guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "audit-filters", queryOrModel: targetModel) else {
+            return []
         }
+        guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: content)
+        let relPath = relativePath(of: fileURL, relativeTo: baseURL)
+        let converter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        let visitor = FilterAuditVisitor(viewMode: .sourceAccurate, targetModel: targetModel)
+        visitor.resetForNewFile(filePath: relPath, converter: converter)
+        visitor.walk(sourceFile)
+        return visitor.results
     }
     
     if isJSON {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(visitor.results), let json = String(data: data, encoding: .utf8) {
+        if let data = try? encoder.encode(results), let json = String(data: data, encoding: .utf8) {
             print(json)
         }
     } else {
-        if visitor.results.isEmpty {
-            print("[OK: 0 filters found for \(targetModel)]")
+        if results.isEmpty {
+            print("[OK: No active matches found for '\(targetModel)' across \(swiftFiles.count) scanned files]")
         } else {
             // Formatted clean tabular output
             var locWidth = 8      // "Location"
@@ -268,7 +273,7 @@ public func runAuditFilters(args: [String]) {
             var modelWidth = 5    // "Model"
             
             var rowData: [(loc: String, kind: String, model: String, cond: String)] = []
-            for item in visitor.results {
+            for item in results {
                 let leaf = URL(fileURLWithPath: item.file).lastPathComponent
                 let loc = "\(leaf):\(item.line)"
                 locWidth = max(locWidth, loc.count)

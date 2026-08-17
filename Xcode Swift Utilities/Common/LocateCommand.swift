@@ -109,29 +109,38 @@ func runLocate(args: [String]) {
         exit(1)
     }
 
-    let visitor = SymbolLocatorVisitor(viewMode: .sourceAccurate)
-    visitor.symbolQuery = targetSymbol
-    let baseURL = URL(fileURLWithPath: path)
+    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(path))
 
-    for fileURL in swiftFiles {
-        if let content = try? String(contentsOfFile: fileURL.path, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: content)
-            visitor.currentFilePath = relativePath(of: fileURL, relativeTo: baseURL)
-            visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            visitor.walk(sourceFile)
+    let results = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [SymbolLocationModel] in
+        guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "locate", queryOrModel: targetSymbol) else {
+            return []
         }
+        guard let content = try? String(contentsOfFile: fileURL.path, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: content)
+        let visitor = SymbolLocatorVisitor(viewMode: .sourceAccurate)
+        visitor.symbolQuery = targetSymbol
+        visitor.currentFilePath = relativePath(of: fileURL, relativeTo: baseURL)
+        visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        visitor.walk(sourceFile)
+        return visitor.results
     }
 
     if isJSON {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(visitor.results), let json = String(data: data, encoding: .utf8) {
+        if let data = try? encoder.encode(results), let json = String(data: data, encoding: .utf8) {
             print(json)
         }
     } else {
-        for res in visitor.results {
-            let leaf = URL(fileURLWithPath: res.file).lastPathComponent
-            print("\(res.name)|\(res.kind)|\(leaf):\(res.line)")
+        if results.isEmpty {
+            print("[OK: No active matches found for '\(targetSymbol)' across \(swiftFiles.count) scanned files]")
+        } else {
+            for res in results {
+                let leaf = URL(fileURLWithPath: res.file).lastPathComponent
+                print("\(res.name)|\(res.kind)|\(leaf):\(res.line)")
+            }
         }
     }
 }

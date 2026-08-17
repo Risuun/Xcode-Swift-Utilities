@@ -106,30 +106,35 @@ public func runFindUsage(args: [String]) {
         exit(1)
     }
     
-    let visitor = UsageVisitor(viewMode: .sourceAccurate, targetSymbol: targetSymbol)
-    let baseURL = URL(fileURLWithPath: path)
+    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(path))
     
-    for fileURL in swiftFiles {
-        if let content = try? String(contentsOfFile: fileURL.path, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: content)
-            let relPath = relativePath(of: fileURL, relativeTo: baseURL)
-            let converter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            visitor.resetForNewFile(filePath: relPath, converter: converter, sourceContent: content)
-            visitor.walk(sourceFile)
+    let matches = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [UsageMatch] in
+        guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "find-usage", queryOrModel: targetSymbol) else {
+            return []
         }
+        guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: content)
+        let relPath = relativePath(of: fileURL, relativeTo: baseURL)
+        let converter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        let visitor = UsageVisitor(viewMode: .sourceAccurate, targetSymbol: targetSymbol)
+        visitor.resetForNewFile(filePath: relPath, converter: converter, sourceContent: content)
+        visitor.walk(sourceFile)
+        return visitor.matches
     }
     
     if isJSON {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(visitor.matches), let json = String(data: data, encoding: .utf8) {
+        if let data = try? encoder.encode(matches), let json = String(data: data, encoding: .utf8) {
             print(json)
         }
     } else {
-        if visitor.matches.isEmpty {
-            print("[OK: 0 usages of \(targetSymbol)]")
+        if matches.isEmpty {
+            print("[OK: No active matches found for '\(targetSymbol)' across \(swiftFiles.count) scanned files]")
         } else {
-            for match in visitor.matches {
+            for match in matches {
                 let leaf = URL(fileURLWithPath: match.file).lastPathComponent
                 print("\(leaf):L\(match.line) | \(match.lineContent)")
             }

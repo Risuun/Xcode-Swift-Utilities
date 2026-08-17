@@ -46,26 +46,44 @@ func runExtractSchema(args: [String]) {
         exit(1)
     }
     
-    let visitor = SchemaVisitor(viewMode: .sourceAccurate)
-    let baseFolderURL = URL(fileURLWithPath: targetPath)
-    
-    for fileURL in swiftFiles {
-        if let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: fileContent)
-            
-            let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
-            visitor.currentFilePath = relPath
-            visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            
-            visitor.walk(sourceFile)
-        }
+    struct SchemaFileScanResult {
+        var models: [SchemaModel]
+        var queries: [SchemaQuery]
     }
     
-    let modelNames = Set(visitor.models.map { $0.name })
+    let baseFolderURL = URL(fileURLWithPath: resolveOrExitTarget(targetPath))
+    
+    let scanResults = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [SchemaFileScanResult] in
+        guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "extract-schema", queryOrModel: nil) else {
+            return []
+        }
+        guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: fileContent)
+        let visitor = SchemaVisitor(viewMode: .sourceAccurate)
+        let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
+        visitor.currentFilePath = relPath
+        visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        visitor.walk(sourceFile)
+        if visitor.models.isEmpty && visitor.queries.isEmpty {
+            return []
+        }
+        return [SchemaFileScanResult(models: visitor.models, queries: visitor.queries)]
+    }
+    
+    var allModels: [SchemaModel] = []
+    var allQueries: [SchemaQuery] = []
+    for item in scanResults {
+        allModels.append(contentsOf: item.models)
+        allQueries.append(contentsOf: item.queries)
+    }
+    
+    let modelNames = Set(allModels.map { $0.name })
     
     // Build output objects
     var outputModels: [SchemaModelOutput] = []
-    for model in visitor.models {
+    for model in allModels {
         var properties: [SchemaProperty] = []
         var relationships: [SchemaRelationship] = []
         
@@ -82,16 +100,15 @@ func runExtractSchema(args: [String]) {
     }
     
     if isJSON {
-        let output = SchemaOutput(models: outputModels, queries: visitor.queries)
+        let output = SchemaOutput(models: outputModels, queries: allQueries)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         if let data = try? encoder.encode(output), let jsonString = String(data: data, encoding: .utf8) {
             print(jsonString)
         }
     } else {
-        if outputModels.isEmpty && visitor.queries.isEmpty {
-            let leaf = URL(fileURLWithPath: targetPath).lastPathComponent
-            print("[OK: No schemas in \(leaf)]")
+        if outputModels.isEmpty && allQueries.isEmpty {
+            print("[OK: No active matches found for 'Schema' across \(swiftFiles.count) scanned files]")
             return
         }
 
@@ -117,9 +134,9 @@ func runExtractSchema(args: [String]) {
             print("")
         }
         
-        if !visitor.queries.isEmpty {
+        if !allQueries.isEmpty {
             print("Queries:")
-            for query in visitor.queries {
+            for query in allQueries {
                 let queryLoc = query.location.map { " // \($0.file):\($0.line)" } ?? ""
                 print("  @Query var \(query.name): \(query.type)\(queryLoc)")
             }

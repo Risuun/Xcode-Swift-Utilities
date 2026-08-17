@@ -51,38 +51,119 @@ public func resolveOrExitTarget(_ inputPath: String) -> String {
     return resolved
 }
 
-public func findSwiftFiles(at path: String, excluding: [String]) -> [URL] {
-    let resolvedPath = resolveOrExitTarget(path)
-    let url = URL(fileURLWithPath: resolvedPath)
-    var isDir: ObjCBool = false
-    guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir) else {
-        fputs("[ERROR: Target not found: \(path)]\n", stderr)
-        exit(1)
-    }
+public struct FileDiscovery {
+    public static let ignoredDirectories: Set<String> = [
+        ".build", "DerivedData", ".git", "Pods", "Carthage", 
+        "Preview Content", "Tests", "UITests", "build"
+    ]
     
-    if !isDir.boolValue {
-        return shouldExclude(url.path, patterns: excluding) ? [] : [url]
-    }
-    
-    var swiftFiles: [URL] = []
-    let enumerator = FileManager.default.enumerator(
-        at: url,
-        includingPropertiesForKeys: [.isDirectoryKey],
-        options: [.skipsHiddenFiles, .skipsPackageDescendants]
-    )
-    
-    while let fileURL = enumerator?.nextObject() as? URL {
-        if shouldExclude(fileURL.path, patterns: excluding) {
-            if (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
-                enumerator?.skipDescendants()
+    public static func discoverSwiftFiles(at path: String, excluding: [String] = []) -> [URL] {
+        let resolvedPath = resolveOrExitTarget(path)
+        let url = URL(fileURLWithPath: resolvedPath)
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir) else { return [] }
+        
+        if !isDir.boolValue {
+            if url.pathExtension == "swift" && !shouldExclude(url.path, patterns: excluding) {
+                return [url]
             }
-            continue
+            return []
         }
-        if fileURL.pathExtension == "swift" {
-            swiftFiles.append(fileURL)
+        
+        guard let enumerator = FileManager.default.enumerator(
+            at: url,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else { return [] }
+        
+        var swiftFiles = [URL]()
+        for case let fileURL as URL in enumerator {
+            if let isSubDir = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory, isSubDir {
+                if ignoredDirectories.contains(fileURL.lastPathComponent) || shouldExclude(fileURL.path, patterns: excluding) {
+                    enumerator.skipDescendants()
+                }
+            } else if fileURL.pathExtension == "swift" {
+                if !shouldExclude(fileURL.path, patterns: excluding) {
+                    swiftFiles.append(fileURL)
+                }
+            }
+        }
+        return swiftFiles
+    }
+}
+
+public struct FastFilter {
+    public static func shouldParse(rawText: String, subcommand: String, queryOrModel: String?) -> Bool {
+        switch subcommand {
+        case "audit-filters":
+            if let model = queryOrModel {
+                let containsModel = rawText.localizedCaseInsensitiveContains(model) || rawText.contains(model)
+                let containsFilterToken = rawText.contains("filter") || rawText.contains("@Query") || rawText.contains("Predicate")
+                return containsModel && containsFilterToken
+            }
+            return rawText.contains("filter") || rawText.contains("@Query")
+            
+        case "find-usage":
+            if let symbol = queryOrModel {
+                return rawText.localizedCaseInsensitiveContains(symbol)
+            }
+            return true
+            
+        case "locate":
+            if let symbol = queryOrModel {
+                return rawText.localizedCaseInsensitiveContains(symbol)
+            }
+            return true
+            
+        case "extract-schema":
+            return rawText.contains("@Model") || rawText.contains("@Query")
+            
+        case "audit-memory":
+            return rawText.contains("self")
+            
+        case "trace-state", "scope-check":
+            return rawText.contains("@State") || rawText.contains("@Binding") || rawText.contains("@Query") || rawText.contains("@Bindable") || rawText.contains("@StateObject") || rawText.contains("@ObservedObject") || rawText.contains("View")
+            
+        default:
+            return true
         }
     }
-    return swiftFiles
+
+    public static func shouldParse(fileURL: URL, subcommand: String, queryOrModel: String?) -> Bool {
+        guard let rawText = try? String(contentsOf: fileURL, encoding: .utf8) else { return false }
+        return shouldParse(rawText: rawText, subcommand: subcommand, queryOrModel: queryOrModel)
+    }
+}
+
+public struct ParallelASTScanner {
+    private final class ResultCollector<T>: @unchecked Sendable {
+        var items = [T]()
+        let lock = NSLock()
+        
+        func append(_ newItems: [T]) {
+            lock.lock()
+            items.append(contentsOf: newItems)
+            lock.unlock()
+        }
+    }
+    
+    public static func scan<T>(files: [URL], block: @Sendable @escaping (URL) -> [T]) -> [T] {
+        let collector = ResultCollector<T>()
+        
+        DispatchQueue.concurrentPerform(iterations: files.count) { index in
+            let fileURL = files[index]
+            let fileResults = block(fileURL)
+            
+            if !fileResults.isEmpty {
+                collector.append(fileResults)
+            }
+        }
+        return collector.items
+    }
+}
+
+public func findSwiftFiles(at path: String, excluding: [String] = []) -> [URL] {
+    return FileDiscovery.discoverSwiftFiles(at: path, excluding: excluding)
 }
 
 public func shouldExclude(_ path: String, patterns: [String]) -> Bool {

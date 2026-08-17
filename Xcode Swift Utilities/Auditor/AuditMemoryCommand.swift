@@ -38,31 +38,35 @@ func runAuditMemory(args: [String]) {
         exit(1)
     }
     
-    let visitor = MemoryAuditVisitor(viewMode: .sourceAccurate)
-    let baseFolderURL = URL(fileURLWithPath: targetPath)
+    let baseFolderURL = URL(fileURLWithPath: resolveOrExitTarget(targetPath))
     
-    for fileURL in swiftFiles {
-        if let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) {
-            let sourceFile = Parser.parse(source: fileContent)
-            let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
-            visitor.currentFilePath = relPath
-            visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
-            visitor.walk(sourceFile)
+    let violations = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [MemoryViolation] in
+        guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "audit-memory", queryOrModel: nil) else {
+            return []
         }
+        guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return []
+        }
+        let sourceFile = Parser.parse(source: fileContent)
+        let visitor = MemoryAuditVisitor(viewMode: .sourceAccurate)
+        let relPath = relativePath(of: fileURL, relativeTo: baseFolderURL)
+        visitor.currentFilePath = relPath
+        visitor.currentLocationConverter = SourceLocationConverter(fileName: fileURL.path, tree: sourceFile)
+        visitor.walk(sourceFile)
+        return visitor.violations
     }
     
     if isJSON {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(visitor.violations), let jsonString = String(data: data, encoding: .utf8) {
+        if let data = try? encoder.encode(violations), let jsonString = String(data: data, encoding: .utf8) {
             print(jsonString)
         }
     } else {
-        if visitor.violations.isEmpty {
-            let leaf = URL(fileURLWithPath: targetPath).lastPathComponent
-            print("[OK: \(leaf)]")
+        if violations.isEmpty {
+            print("[OK: No active matches found for 'RetainCycles' across \(swiftFiles.count) scanned files]")
         } else {
-            for violation in visitor.violations {
+            for violation in violations {
                 let leaf = URL(fileURLWithPath: violation.location.file).lastPathComponent
                 print("\(leaf):\(violation.location.line):\(violation.location.column): warning: strong self capture in closure")
             }
