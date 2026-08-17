@@ -30,6 +30,12 @@ func main() {
     } else if args[0] == "index" {
         args.removeFirst()
         runIndex(args: args)
+    } else if args[0] == "find-usage" {
+        args.removeFirst()
+        runFindUsage(args: args)
+    } else if args[0] == "audit-filters" {
+        args.removeFirst()
+        runAuditFilters(args: args)
     } else if args[0] == "extract-schema" {
         args.removeFirst()
         runExtractSchema(args: args)
@@ -69,6 +75,8 @@ Usage:
   XCSwiftMap search "<concept>" [path] [--limit <n>] [--json]
   XCSwiftMap index [path]
   XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]
+  XCSwiftMap find-usage <symbol> [directory-or-file-path] [--json]
+  XCSwiftMap audit-filters --model <ModelName> [directory-or-file-path] [--json]
   XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap view-skeleton <file-path>
   XCSwiftMap scope-check [--json] <directory-or-file-path>
