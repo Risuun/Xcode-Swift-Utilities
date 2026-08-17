@@ -1,4 +1,4 @@
-// DiffVisitor.swift // Xcode Swift Utilities
+// DiffVisitor.swift // GitDiff
 
 import Foundation
 import SwiftSyntax
@@ -30,16 +30,14 @@ public class DeclarationCollector: SyntaxVisitor {
         _ = nodeStack.popLast()
     }
     
+    // MARK: - Types
     public override func visit(_ node: ClassDeclSyntax) -> SyntaxVisitorContinueKind {
         let access = node.modifiers.trimmedDescription
         let accessStr = access.isEmpty ? "" : "\(access) "
         pushNode(kind: "class", name: "\(accessStr)class \(node.name.text)", syntax: node)
         return .visitChildren
     }
-    
-    public override func visitPost(_ node: ClassDeclSyntax) {
-        popNode()
-    }
+    public override func visitPost(_ node: ClassDeclSyntax) { popNode() }
     
     public override func visit(_ node: StructDeclSyntax) -> SyntaxVisitorContinueKind {
         let access = node.modifiers.trimmedDescription
@@ -47,10 +45,7 @@ public class DeclarationCollector: SyntaxVisitor {
         pushNode(kind: "struct", name: "\(accessStr)struct \(node.name.text)", syntax: node)
         return .visitChildren
     }
-    
-    public override func visitPost(_ node: StructDeclSyntax) {
-        popNode()
-    }
+    public override func visitPost(_ node: StructDeclSyntax) { popNode() }
     
     public override func visit(_ node: EnumDeclSyntax) -> SyntaxVisitorContinueKind {
         let access = node.modifiers.trimmedDescription
@@ -58,10 +53,7 @@ public class DeclarationCollector: SyntaxVisitor {
         pushNode(kind: "enum", name: "\(accessStr)enum \(node.name.text)", syntax: node)
         return .visitChildren
     }
-    
-    public override func visitPost(_ node: EnumDeclSyntax) {
-        popNode()
-    }
+    public override func visitPost(_ node: EnumDeclSyntax) { popNode() }
     
     public override func visit(_ node: ProtocolDeclSyntax) -> SyntaxVisitorContinueKind {
         let access = node.modifiers.trimmedDescription
@@ -69,68 +61,56 @@ public class DeclarationCollector: SyntaxVisitor {
         pushNode(kind: "protocol", name: "\(accessStr)protocol \(node.name.text)", syntax: node)
         return .visitChildren
     }
-    
-    public override func visitPost(_ node: ProtocolDeclSyntax) {
-        popNode()
-    }
-    
-    public override func visit(_ node: ActorDeclSyntax) -> SyntaxVisitorContinueKind {
-        let access = node.modifiers.trimmedDescription
-        let accessStr = access.isEmpty ? "" : "\(access) "
-        pushNode(kind: "actor", name: "\(accessStr)actor \(node.name.text)", syntax: node)
-        return .visitChildren
-    }
-    
-    public override func visitPost(_ node: ActorDeclSyntax) {
-        popNode()
-    }
+    public override func visitPost(_ node: ProtocolDeclSyntax) { popNode() }
     
     public override func visit(_ node: ExtensionDeclSyntax) -> SyntaxVisitorContinueKind {
-        let access = node.modifiers.trimmedDescription
-        let accessStr = access.isEmpty ? "" : "\(access) "
-        pushNode(kind: "extension", name: "\(accessStr)extension \(node.extendedType.trimmedDescription)", syntax: node)
+        pushNode(kind: "extension", name: "extension \(node.extendedType.trimmedDescription)", syntax: node)
         return .visitChildren
     }
+    public override func visitPost(_ node: ExtensionDeclSyntax) { popNode() }
     
-    public override func visitPost(_ node: ExtensionDeclSyntax) {
-        popNode()
-    }
-    
+    // MARK: - Functions & Initializers
     public override func visit(_ node: FunctionDeclSyntax) -> SyntaxVisitorContinueKind {
+        let signature = "\(node.name.text)\(node.signature.trimmedDescription)"
         let access = node.modifiers.trimmedDescription
         let accessStr = access.isEmpty ? "" : "\(access) "
-        pushNode(kind: "function", name: "\(accessStr)func \(node.name.text)\(node.signature.trimmedDescription)", syntax: node)
+        pushNode(kind: "func", name: "\(accessStr)func \(signature)", syntax: node)
         return .visitChildren
     }
+    public override func visitPost(_ node: FunctionDeclSyntax) { popNode() }
     
-    public override func visitPost(_ node: FunctionDeclSyntax) {
-        popNode()
+    public override func visit(_ node: InitializerDeclSyntax) -> SyntaxVisitorContinueKind {
+        let signature = "init\(node.signature.trimmedDescription)"
+        let access = node.modifiers.trimmedDescription
+        let accessStr = access.isEmpty ? "" : "\(access) "
+        pushNode(kind: "init", name: "\(accessStr)\(signature)", syntax: node)
+        return .visitChildren
     }
+    public override func visitPost(_ node: InitializerDeclSyntax) { popNode() }
     
+    // MARK: - Properties & Enum Cases
     public override func visit(_ node: VariableDeclSyntax) -> SyntaxVisitorContinueKind {
-        if let parent = nodeStack.last {
-            if parent.kind != "function" {
-                let access = node.modifiers.trimmedDescription
-                let accessStr = access.isEmpty ? "" : "\(access) "
-                let specifier = node.bindingSpecifier.text
-                let names = node.bindings.map { $0.pattern.trimmedDescription }.joined(separator: ", ")
-                let type = node.bindings.first?.typeAnnotation?.type.trimmedDescription
-                let typeStr = type.map { ": \($0)" } ?? ""
-                pushNode(kind: "variable", name: "\(accessStr)\(specifier) \(names)\(typeStr)", syntax: node)
-                popNode()
-            }
-        }
+        let names = node.bindings.compactMap { $0.pattern.trimmedDescription }.joined(separator: ", ")
+        let typeStr = node.bindings.first?.typeAnnotation?.type.trimmedDescription ?? ""
+        let fullType = typeStr.isEmpty ? "" : ": \(typeStr)"
+        let access = node.modifiers.trimmedDescription
+        let accessStr = access.isEmpty ? "" : "\(access) "
+        let bindingSpec = node.bindingSpecifier.text
+        pushNode(kind: "var", name: "\(accessStr)\(bindingSpec) \(names)\(fullType)", syntax: node)
         return .skipChildren
     }
+    public override func visitPost(_ node: VariableDeclSyntax) { popNode() }
+    
+    public override func visit(_ node: EnumCaseDeclSyntax) -> SyntaxVisitorContinueKind {
+        let elements = node.elements.map { $0.trimmedDescription }.joined(separator: ", ")
+        pushNode(kind: "case", name: "case \(elements)", syntax: node)
+        return .skipChildren
+    }
+    public override func visitPost(_ node: EnumCaseDeclSyntax) { popNode() }
 }
 
 public func filterNode(_ node: DiffNode, modifiedLines: Set<Int>) -> DiffNode? {
-    let nodeRange = node.lineRange
-    let intersects = modifiedLines.contains { nodeRange.contains($0) }
-    
-    if !intersects {
-        return nil
-    }
+    let directHit = node.lineRange.contains { modifiedLines.contains($0) }
     
     var filteredChildren: [DiffNode] = []
     for child in node.children {
@@ -139,71 +119,32 @@ public func filterNode(_ node: DiffNode, modifiedLines: Set<Int>) -> DiffNode? {
         }
     }
     
-    let newNode = DiffNode(kind: node.kind, name: node.name, lineRange: node.lineRange)
-    newNode.children = filteredChildren
-    return newNode
-}
-
-public func runGitDiffProcess(args: [String], workspacePath: String) -> String? {
-    let process = Process()
-    process.executableURL = URL(fileURLWithPath: "/usr/bin/git")
-    process.currentDirectoryURL = URL(fileURLWithPath: workspacePath)
-    
-    var gitArgs = ["diff", "-U0"]
-    if let branchIdx = args.firstIndex(of: "--branch") {
-        if branchIdx + 1 < args.count {
-            gitArgs.append(args[branchIdx + 1])
-        }
-    } else if let branchArg = args.first(where: { $0.hasPrefix("--branch=") }) {
-        gitArgs.append(String(branchArg.dropFirst(9)))
-    } else {
-        for arg in args {
-            if !arg.hasPrefix("-") {
-                gitArgs.append(arg)
-            }
-        }
+    if directHit || !filteredChildren.isEmpty {
+        let newNode = DiffNode(kind: node.kind, name: node.name, lineRange: node.lineRange)
+        newNode.children = filteredChildren
+        return newNode
     }
     
-    process.arguments = gitArgs
-    
-    let pipe = Pipe()
-    process.standardOutput = pipe
-    process.standardError = Pipe()
-    
-    do {
-        try process.run()
-        process.waitUntilExit()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8)
-    } catch {
-        return nil
-    }
+    return nil
 }
 
-public func parseGitDiffOutput(_ output: String) -> [FileDiff] {
+public func parseGitDiffOutput(_ diffOutput: String) -> [FileDiff] {
     var diffs: [FileDiff] = []
-    var currentFile: String? = nil
+    let lines = diffOutput.components(separatedBy: "\n")
+    
+    var currentFile: String?
     var currentLines = Set<Int>()
     
-    let lines = output.components(separatedBy: .newlines)
     for line in lines {
-        if line.hasPrefix("diff --git a/") {
+        let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedLine.hasPrefix("+++ b/") {
             if let file = currentFile, !currentLines.isEmpty {
                 diffs.append(FileDiff(filepath: file, modifiedLines: currentLines))
             }
+            currentFile = String(trimmedLine.dropFirst(6)).trimmingCharacters(in: .whitespacesAndNewlines)
             currentLines = Set<Int>()
-            currentFile = nil
-            
-            let remainder = line.dropFirst(13)
-            let parts = remainder.components(separatedBy: " b/")
-            if parts.count >= 2 {
-                let bPath = parts[0]
-                if bPath.hasSuffix(".swift") {
-                    currentFile = String(bPath)
-                }
-            }
-        } else if line.hasPrefix("@@ ") {
-            let parts = line.components(separatedBy: " ")
+        } else if trimmedLine.hasPrefix("@@") {
+            let parts = trimmedLine.components(separatedBy: " ")
             if parts.count >= 3 {
                 let newRangePart = parts[2]
                 if newRangePart.hasPrefix("+") {
@@ -228,7 +169,7 @@ public func parseGitDiffOutput(_ output: String) -> [FileDiff] {
         diffs.append(FileDiff(filepath: file, modifiedLines: currentLines))
     }
     
-    return diffs
+    return diffs.filter { $0.filepath.hasSuffix(".swift") }
 }
 
 public func convertToModelNode(_ node: DiffNode) -> DiffNodeModel {

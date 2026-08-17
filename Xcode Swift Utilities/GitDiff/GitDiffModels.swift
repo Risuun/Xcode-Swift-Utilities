@@ -1,4 +1,4 @@
-// GitDiffModels.swift // Xcode Swift Utilities
+// GitDiffModels.swift // GitDiff
 
 import Foundation
 
