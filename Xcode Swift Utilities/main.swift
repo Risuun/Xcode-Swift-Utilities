@@ -30,6 +30,9 @@ func main() {
     } else if args[0] == "index" {
         args.removeFirst()
         runIndex(args: args)
+    } else if args[0] == "inspect-model" {
+        args.removeFirst()
+        runInspectModel(args: args)
     } else if args[0] == "find-usage" {
         args.removeFirst()
         runFindUsage(args: args)
@@ -78,6 +81,7 @@ Usage:
   XCSwiftMap diff-check [--parse-only] [--no-header-fix] [--stdin] [<file-path>]
   XCSwiftMap search "<concept>" [path] [--limit <n>] [--json]
   XCSwiftMap index [path]
+  XCSwiftMap inspect-model --model <ModelName> [directory-or-file-path] [--json]
   XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]
   XCSwiftMap find-usage <symbol> [directory-or-file-path] [--json]
   XCSwiftMap audit-filters --model <ModelName> [directory-or-file-path] [--json]
