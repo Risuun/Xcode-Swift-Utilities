@@ -11,6 +11,8 @@
 		9917AB87302F732F00EF8E1F /* SwiftLlama in Frameworks */ = {isa = PBXBuildFile; productRef = 9917AB86302F732F00EF8E1F /* SwiftLlama */; };
 		993A79EC26DFB8820067664B /* SwiftSyntax in Frameworks */ = {isa = PBXBuildFile; productRef = 993A79EA26DFB8820067664B /* SwiftSyntax */; };
 		993A79ED26DFB8820067664B /* SwiftParser in Frameworks */ = {isa = PBXBuildFile; productRef = 993A79EB26DFB8820067664B /* SwiftParser */; };
+		993A79F026DFB8820067664B /* SwiftParserDiagnostics in Frameworks */ = {isa = PBXBuildFile; productRef = 993A79EE26DFB8820067664B /* SwiftParserDiagnostics */; };
+		993A79F126DFB8820067664B /* SwiftDiagnostics in Frameworks */ = {isa = PBXBuildFile; productRef = 993A79EF26DFB8820067664B /* SwiftDiagnostics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +49,8 @@
 				993A79EC26DFB8820067664B /* SwiftSyntax in Frameworks */,
 				9917AB87302F732F00EF8E1F /* SwiftLlama in Frameworks */,
 				993A79ED26DFB8820067664B /* SwiftParser in Frameworks */,
+				993A79F026DFB8820067664B /* SwiftParserDiagnostics in Frameworks */,
+				993A79F126DFB8820067664B /* SwiftDiagnostics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,6 +104,8 @@
 			packageProductDependencies = (
 				993A79EA26DFB8820067664B /* SwiftSyntax */,
 				993A79EB26DFB8820067664B /* SwiftParser */,
+				993A79EE26DFB8820067664B /* SwiftParserDiagnostics */,
+				993A79EF26DFB8820067664B /* SwiftDiagnostics */,
 				9917AB86302F732F00EF8E1F /* SwiftLlama */,
 			);
 			productName = "Xcode Swift Utilities";
@@ -210,7 +216,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				MARKETING_VERSION = 1.4.3;
+				MARKETING_VERSION = 1.4.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -269,7 +275,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				MARKETING_VERSION = 1.4.3;
+				MARKETING_VERSION = 1.4.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -290,7 +296,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.3;
+				MARKETING_VERSION = 1.4.4;
 				PRODUCT_NAME = XCSwiftMap;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
@@ -311,7 +317,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.3;
+				MARKETING_VERSION = 1.4.4;
 				PRODUCT_NAME = XCSwiftMap;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
@@ -376,6 +382,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */;
 			productName = SwiftParser;
+		};
+		993A79EE26DFB8820067664B /* SwiftParserDiagnostics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftParserDiagnostics;
+		};
+		993A79EF26DFB8820067664B /* SwiftDiagnostics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 993A79E926DFB8820067664B /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftDiagnostics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

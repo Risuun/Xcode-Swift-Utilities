@@ -1,0 +1,12 @@
+{
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Assets/XCAssetsCommand.swift" : {
+    "abi-baseline-json" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/XCSwiftMap.abi.json",
+    "const-values" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/Xcode Swift Utilities-primary.swiftconstvalues",
+    "dependencies" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/Xcode Swift Utilities-primary.d",
+    "diagnostics" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/Xcode Swift Utilities-primary.dia",
+    "objc-header" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/XCSwiftMap-Swift.h",
+    "swiftdoc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/XCSwiftMap.swiftdoc",
+    "swiftmodule" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/XCSwiftMap.swiftmodule",
+    "swiftsourceinfo" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/x86_64/XCSwiftMap.swiftsourceinfo"
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "" : {
+    "const-values" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary.swiftconstvalues",
+    "dependencies" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary.d",
+    "diagnostics" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary.dia",
+    "emit-module-dependencies" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary-emit-module.dia",
+    "pch" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Xcode Swift Utilities-primary.swiftdeps"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Assets/XCAssetsCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/XCAssetsCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/XCAssetsCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/XCAssetsCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Assets/XCAssetsValidator.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/XCAssetsValidator.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/XCAssetsValidator.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/XCAssetsValidator.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Auditor/AuditMemoryCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/AuditMemoryCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/AuditMemoryCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/AuditMemoryCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Auditor/FilterAuditVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/FilterAuditVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/FilterAuditVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/FilterAuditVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Auditor/MemoryAuditVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/MemoryAuditVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/MemoryAuditVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/MemoryAuditVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Common/FileScanner.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/FileScanner.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/FileScanner.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/FileScanner.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Common/LocateCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/LocateCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/LocateCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/LocateCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Common/Models.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Models.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Models.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Models.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Extractor/ExtractSchemaCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ExtractSchemaCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ExtractSchemaCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ExtractSchemaCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Extractor/ExtractorModels.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ExtractorModels.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ExtractorModels.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ExtractorModels.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Extractor/SchemaVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SchemaVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SchemaVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SchemaVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/GitDiff/DiffVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/DiffVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/DiffVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/DiffVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/GitDiff/GitDiffCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/GitDiffCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/GitDiffCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/GitDiffCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/GitDiff/GitDiffModels.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/GitDiffModels.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/GitDiffModels.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/GitDiffModels.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Mapper/MapperModels.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/MapperModels.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/MapperModels.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/MapperModels.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Mapper/Printers.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Printers.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Printers.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/Printers.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Mapper/SemanticMapCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SemanticMapCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SemanticMapCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SemanticMapCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Mapper/SwiftMapVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SwiftMapVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SwiftMapVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SwiftMapVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Search/CodeChunker.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/CodeChunker.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/CodeChunker.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/CodeChunker.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Search/CodeVectorIndex.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/CodeVectorIndex.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/CodeVectorIndex.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/CodeVectorIndex.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Search/ModelResolver.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ModelResolver.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ModelResolver.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ModelResolver.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Search/SearchCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SearchCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SearchCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SearchCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Search/UsageVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/UsageVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/UsageVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/UsageVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Search/VectorMath.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/VectorMath.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/VectorMath.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/VectorMath.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Skeleton/PreviewRenderCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/PreviewRenderCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/PreviewRenderCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/PreviewRenderCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Skeleton/SkeletonVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SkeletonVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SkeletonVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SkeletonVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Skeleton/ViewSkeletonCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ViewSkeletonCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ViewSkeletonCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/ViewSkeletonCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Summary/SPMScanner.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SPMScanner.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SPMScanner.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SPMScanner.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Summary/SPMSummaryCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SPMSummaryCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SPMSummaryCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/SPMSummaryCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Tracer/StateTraceVisitor.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/StateTraceVisitor.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/StateTraceVisitor.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/StateTraceVisitor.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/Tracer/TraceStateCommand.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/TraceStateCommand.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/TraceStateCommand.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/TraceStateCommand.o"
+  },
+  "/Users/Kubilis/Xcode Projects/XCSwiftMap/Xcode Swift Utilities/main.swift" : {
+    "index-unit-output-path" : "/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/main.o",
+    "llvm-bc" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/main.bc",
+    "object" : "/Users/Kubilis/Xcode Projects/XCSwiftMap/build/Xcode Swift Utilities.build/Release/Xcode Swift Utilities.build/Objects-normal/arm64/main.o"
+  }
+}

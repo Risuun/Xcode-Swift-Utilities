@@ -1,0 +1,66 @@
+{
+  "" : {
+    "const-values" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary.swiftconstvalues",
+    "dependencies" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary.d",
+    "diagnostics" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary.dia",
+    "emit-module-dependencies" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary-emit-module.dia",
+    "pch" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlama-primary.swiftdeps"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/LlamaModel.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/LlamaModel.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/LlamaModel.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/LlamaModel.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/Batch.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Batch.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Batch.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Batch.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/Chat.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Chat.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Chat.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Chat.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/Configuration.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Configuration.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Configuration.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Configuration.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/Prompt.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Prompt.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Prompt.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Prompt.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/Session.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Session.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Session.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Session.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/StopToken.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/StopToken.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/StopToken.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/StopToken.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/SwiftLlamaError.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlamaError.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlamaError.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftLlamaError.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Models/TypeAlias.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/TypeAlias.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/TypeAlias.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/TypeAlias.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/Swiftllama.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Swiftllama.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Swiftllama.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/Swiftllama.o"
+  },
+  "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/Sources/SwiftLlama/SwiftllamaActor.swift" : {
+    "index-unit-output-path" : "/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftllamaActor.o",
+    "llvm-bc" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftllamaActor.bc",
+    "object" : "/Users/MKubilis_1/Library/Developer/Xcode/DerivedData/Xcode_Swift_Utilities-dvdttjttwykrqzftcufuzgjcwxzd/SourcePackages/checkouts/SwiftLlama/build/SwiftLlama.build/Release/SwiftLlama.build/Objects-normal/x86_64/SwiftllamaActor.o"
+  }
+}

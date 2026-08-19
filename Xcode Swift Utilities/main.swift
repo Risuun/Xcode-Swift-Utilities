@@ -63,6 +63,9 @@ func main() {
     } else if args[0] == "xcassets" {
         args.removeFirst()
         runXCAssets(args: args)
+    } else if args[0] == "diff-check" {
+        args.removeFirst()
+        runDiffCheck(args: args)
     } else {
         runSemanticMap(args: args)
     }
@@ -72,6 +75,7 @@ func printUsage(toStderr: Bool = false) {
     let usageText = """
 Usage:
   XCSwiftMap [--json] [--summary] [--mermaid] [--exclude <patterns>] <file-or-directory-path>
+  XCSwiftMap diff-check [--parse-only] [--no-header-fix] [--stdin] [<file-path>]
   XCSwiftMap search "<concept>" [path] [--limit <n>] [--json]
   XCSwiftMap index [path]
   XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]

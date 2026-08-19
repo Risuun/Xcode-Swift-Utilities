@@ -1,0 +1,4 @@
+module SwiftLlama {
+header "SwiftLlama-Swift.h"
+export *
+}
