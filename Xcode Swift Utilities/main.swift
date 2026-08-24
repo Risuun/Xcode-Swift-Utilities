@@ -1,4 +1,4 @@
-// main.swift // Xcode Swift Utilities
+// main.swift // XCEdit //
 
 import Foundation
 
@@ -69,6 +69,27 @@ func main() {
     } else if args[0] == "diff-check" {
         args.removeFirst()
         runDiffCheck(args: args)
+    } else if args[0] == "view-scrub" {
+        args.removeFirst()
+        runViewScrub(args: args)
+    } else if args[0] == "pack-context" {
+        args.removeFirst()
+        runPackContext(args: args)
+    } else if args[0] == "mini-map" {
+        args.removeFirst()
+        runMiniMap(args: args)
+    } else if args[0] == "trace-state-logical" {
+        args.removeFirst()
+        runTraceStateLogical(args: args)
+    } else if args[0] == "flatten-deps" {
+        args.removeFirst()
+        runFlattenDeps(args: args)
+    } else if args[0] == "bind-check" {
+        args.removeFirst()
+        runBindCheck(args: args)
+    } else if args[0] == "intent-blame" {
+        args.removeFirst()
+        runIntentBlame(args: args)
     } else {
         runSemanticMap(args: args)
     }
@@ -87,8 +108,15 @@ Usage:
   XCSwiftMap audit-filters --model <ModelName> [directory-or-file-path] [--json]
   XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>
   XCSwiftMap view-skeleton <file-path>
+  XCSwiftMap view-scrub <file-path>
+  XCSwiftMap pack-context <file-path>
+  XCSwiftMap mini-map <file-path>
   XCSwiftMap scope-check [--json] <directory-or-file-path>
   XCSwiftMap trace-state [--json] <directory-or-file-path>
+  XCSwiftMap trace-state-logical <file-path>
+  XCSwiftMap flatten-deps --symbol <symbol> [--directory <path>]
+  XCSwiftMap bind-check --model-path <path> --view-path <path>
+  XCSwiftMap intent-blame <symbol> <file-path>
   XCSwiftMap spm-summary [--json] [directory-path]
   XCSwiftMap audit-memory [--json] <directory-or-file-path>
   XCSwiftMap git-diff [--json] [--branch <branch>]
