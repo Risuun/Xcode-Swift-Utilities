@@ -1,4 +1,4 @@
-// DiffCheckCommand.swift // Xcode Swift Utilities
+// DiffCheckCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -11,7 +11,6 @@ func runDiffCheck(args: [String]) {
         printDiffCheckUsage(toStderr: false)
         exit(0)
     }
-
     var isParseOnly = false
     var noHeaderFix = false
     var isStdin = false
@@ -26,6 +25,13 @@ func runDiffCheck(args: [String]) {
             noHeaderFix = true
         } else if arg == "--stdin" {
             isStdin = true
+        } else if arg == "--path" || arg == "-p" {
+            if idx + 1 < args.count {
+                rawFilePath = args[idx + 1]
+                idx += 1
+            }
+        } else if arg.hasPrefix("--path=") {
+            rawFilePath = String(arg.dropFirst("--path=".count))
         } else if arg.hasPrefix("-") {
             fputs("Unknown option: \(arg)\n", stderr)
             exit(1)
@@ -34,12 +40,11 @@ func runDiffCheck(args: [String]) {
         }
         idx += 1
     }
-
     let leafFileName: String
     let sourceContent: String
     let targetFileURL: URL?
 
-    if isStdin || rawFilePath == nil || rawFilePath == "-" {
+    if isStdin || rawFilePath == "-" {
         let inputData = FileHandle.standardInput.readDataToEndOfFile()
         guard let text = String(data: inputData, encoding: .utf8) else {
             fputs("[ERROR: Failed to read utf-8 content from standard input]\n", stderr)
@@ -49,13 +54,14 @@ func runDiffCheck(args: [String]) {
         leafFileName = "Source.swift"
         targetFileURL = nil
     } else {
-        guard let inputPath = rawFilePath else {
+        guard let inputPath = rawFilePath, !inputPath.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             printDiffCheckUsage(toStderr: true)
             exit(1)
         }
 
-        guard let resolvedPath = resolveTargetFileOrDirectory(inputPath) else {
-            fputs("[MISSING: \(URL(fileURLWithPath: inputPath).lastPathComponent)]\n", stderr)
+        let sanitizedInput = sanitizePath(inputPath)
+        guard let resolvedPath = resolveTargetFileOrDirectory(sanitizedInput) else {
+            fputs("[MISSING: \(URL(fileURLWithPath: sanitizedInput).lastPathComponent)]\n", stderr)
             exit(1)
         }
 

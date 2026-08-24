@@ -1,4 +1,4 @@
-// ExtractSchemaCommand.swift // Extractor
+// ExtractSchemaCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -21,11 +21,11 @@ func runExtractSchema(args: [String]) {
             isJSON = true
         } else if arg == "--exclude" {
             if idx + 1 < args.count {
-                excludes = args[idx + 1].split(separator: ",").map { String($0) }
+                excludes = args[idx + 1].split(separator: ",").map { sanitizePath(String($0)) }
                 idx += 1
             }
         } else if arg.hasPrefix("--exclude=") {
-            excludes = String(arg.dropFirst(10)).split(separator: ",").map { String($0) }
+            excludes = String(arg.dropFirst(10)).split(separator: ",").map { sanitizePath(String($0)) }
         } else if arg.hasPrefix("-") {
             fputs("Unknown option: \(arg)\n", stderr)
             exit(1)
@@ -35,11 +35,12 @@ func runExtractSchema(args: [String]) {
         idx += 1
     }
     
-    guard let targetPath = path else {
+    guard let rawPath = path else {
         fputs("Usage: XCSwiftMap extract-schema [--json] [--exclude <patterns>] <file-or-directory-path>\n", stderr)
         exit(1)
     }
     
+    let targetPath = sanitizePath(rawPath)
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: excludes)
     if swiftFiles.isEmpty {
         fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)

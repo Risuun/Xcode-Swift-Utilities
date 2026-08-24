@@ -1,9 +1,10 @@
-// SPMScanner.swift // Xcode Swift Utilities
+// SPMScanner.swift // XCEdit //
 
 import Foundation
 
 public func findPackageResolvedFiles(at path: String) -> [URL] {
-    let url = URL(fileURLWithPath: path)
+    let sanitized = sanitizePath(path)
+    let url = URL(fileURLWithPath: sanitized)
     var isDir: ObjCBool = false
     guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir) else {
         return []
@@ -14,13 +15,21 @@ public func findPackageResolvedFiles(at path: String) -> [URL] {
     }
     
     var resolvedFiles: [URL] = []
-    let enumerator = FileManager.default.enumerator(
+    guard let enumerator = FileManager.default.enumerator(
         at: url,
         includingPropertiesForKeys: [.isDirectoryKey],
-        options: [.skipsHiddenFiles]
-    )
+        options: [.skipsHiddenFiles, .skipsPackageDescendants]
+    ) else { return [] }
     
-    while let fileURL = enumerator?.nextObject() as? URL {
+    while let fileURL = enumerator.nextObject() as? URL {
+        let isSubDir = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        if isSubDir {
+            let name = fileURL.lastPathComponent
+            if FileDiscovery.isIgnoredDirectory(name: name, path: fileURL.path) || shouldExclude(fileURL.path, patterns: []) {
+                enumerator.skipDescendants()
+                continue
+            }
+        }
         if fileURL.lastPathComponent == "Package.resolved" {
             resolvedFiles.append(fileURL)
         }

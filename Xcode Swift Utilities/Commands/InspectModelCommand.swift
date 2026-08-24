@@ -1,5 +1,4 @@
-// InspectModelCommand.swift // Commands
-// Compound operation: extract-schema, audit-filters, and find-usage in a single concurrent pass
+// InspectModelCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -254,18 +253,23 @@ public func runInspectModel(args: [String]) {
         idx += 1
     }
     
-    guard let targetModel = modelName, !targetModel.isEmpty else {
+    guard let rawModel = modelName else {
+        fputs("Usage: XCSwiftMap inspect-model --model <ModelName> [directory-or-file-path] [--json]\n", stderr)
+        exit(1)
+    }
+    let targetModel = sanitizePath(rawModel)
+    guard !targetModel.isEmpty else {
         fputs("Usage: XCSwiftMap inspect-model --model <ModelName> [directory-or-file-path] [--json]\n", stderr)
         exit(1)
     }
     
-    let resolvedPath = resolveOrExitTarget(path)
+    let sanitizedPath = sanitizePath(path)
+    let resolvedPath = resolveOrExitTarget(sanitizedPath)
     let swiftFiles = findSwiftFiles(at: resolvedPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("[ERROR: Target not found: \(path)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
-    
     let baseURL = URL(fileURLWithPath: resolvedPath)
     
     // Read and extract schema

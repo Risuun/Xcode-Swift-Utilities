@@ -168,12 +168,13 @@ public func runTraceStateLogical(args: [String]) {
         exit(1)
     }
     
-    let targetPath = args[0]
-    let resolvedPath = resolveOrExitTarget(targetPath)
+    let rawPath = args[0]
+    let sanitizedPath = sanitizePath(rawPath)
+    let resolvedPath = resolveOrExitTarget(sanitizedPath)
     let fileURL = URL(fileURLWithPath: resolvedPath)
     
     guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
-        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
     

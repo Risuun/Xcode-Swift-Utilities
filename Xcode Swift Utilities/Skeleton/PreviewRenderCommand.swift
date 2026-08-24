@@ -1,4 +1,4 @@
-// PreviewRenderCommand.swift // Skeleton
+// PreviewRenderCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -45,9 +45,10 @@ func runPreviewRender(args: [String]) {
         exit(1)
     }
 
-    let resolvedPath = resolveOrExitTarget(rawPath)
+    let sanitizedPath = sanitizePath(rawPath)
+    let resolvedPath = resolveOrExitTarget(sanitizedPath)
     guard let fileContent = try? String(contentsOfFile: resolvedPath, encoding: .utf8) else {
-        fputs("[ERROR: Target not found: \(rawPath)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
 
@@ -70,9 +71,27 @@ func runPreviewRender(args: [String]) {
         process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
         process.arguments = ["simctl", "io", "booted", "screenshot", outputPath]
         
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+        
+        let group = DispatchGroup()
+        group.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+            _ = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+            group.leave()
+        }
+        group.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+            _ = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+            group.leave()
+        }
+        
         do {
             try process.run()
             process.waitUntilExit()
+            group.wait()
             if FileManager.default.fileExists(atPath: outputPath) {
                 print("[PNG Screenshot Generated]: \(outputPath)")
             } else {

@@ -1,4 +1,4 @@
-// XCAssetsValidator.swift // Assets
+// XCAssetsValidator.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax

@@ -1,4 +1,4 @@
-// UsageVisitor.swift // Search
+// UsageVisitor.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -95,19 +95,24 @@ public func runFindUsage(args: [String]) {
         idx += 1
     }
     
-    guard let targetSymbol = symbol, !targetSymbol.isEmpty else {
+    guard let rawSymbol = symbol else {
+        fputs("Usage: XCSwiftMap find-usage <symbol> [directory-or-file-path] [--json]\n", stderr)
+        exit(1)
+    }
+    let targetSymbol = sanitizePath(rawSymbol)
+    guard !targetSymbol.isEmpty else {
         fputs("Usage: XCSwiftMap find-usage <symbol> [directory-or-file-path] [--json]\n", stderr)
         exit(1)
     }
     
-    let swiftFiles = findSwiftFiles(at: path, excluding: [])
+    let sanitizedPath = sanitizePath(path)
+    let swiftFiles = findSwiftFiles(at: sanitizedPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("[ERROR: Target not found: \(path)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
     
-    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(path))
-    
+    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(sanitizedPath))
     let matches = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [UsageMatch] in
         guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "find-usage", queryOrModel: targetSymbol) else {
             return []

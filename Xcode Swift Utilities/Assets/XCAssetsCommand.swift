@@ -1,4 +1,4 @@
-// XCAssetsCommand.swift // Assets
+// XCAssetsCommand.swift // XCEdit //
 
 import Foundation
 
@@ -19,11 +19,11 @@ func runXCAssets(args: [String]) {
             isJSON = true
         } else if arg == "--exclude" {
             if idx + 1 < args.count {
-                excludes = args[idx + 1].split(separator: ",").map { String($0) }
+                excludes = args[idx + 1].split(separator: ",").map { sanitizePath(String($0)) }
                 idx += 1
             }
         } else if arg.hasPrefix("--exclude=") {
-            excludes = String(arg.dropFirst(10)).split(separator: ",").map { String($0) }
+            excludes = String(arg.dropFirst(10)).split(separator: ",").map { sanitizePath(String($0)) }
         } else if arg.hasPrefix("-") {
             fputs("Unknown option: \(arg)\n", stderr)
             exit(1)
@@ -33,11 +33,12 @@ func runXCAssets(args: [String]) {
         idx += 1
     }
     
-    guard let targetPath = path else {
+    guard let rawPath = path else {
         fputs("Usage: XCSwiftMap xcassets [--json] [--exclude <patterns>] <directory-path>\n", stderr)
         exit(1)
     }
     
+    let targetPath = sanitizePath(rawPath)
     let resolvedPath = resolveOrExitTarget(targetPath)
     let validator = XCAssetsValidator(projectPath: resolvedPath, excludes: excludes)
     validator.run(isJSON: isJSON)

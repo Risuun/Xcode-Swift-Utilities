@@ -1,4 +1,4 @@
-// GitDiffCommand.swift // GitDiff
+// GitDiffCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -8,6 +8,7 @@ public struct GitDiffRunner {
     public static func run(args: [String], workspacePath: String = FileManager.default.currentDirectoryPath) {
         var isJSON = false
         var gitArgs = ["diff", "-U0"]
+        let sanitizedWorkspace = sanitizePath(workspacePath)
         
         var i = 0
         while i < args.count {
@@ -16,19 +17,21 @@ public struct GitDiffRunner {
                 isJSON = true
             } else if arg == "--branch" || arg == "-b" {
                 if i + 1 < args.count {
-                    gitArgs.append(args[i + 1])
+                    gitArgs.append(sanitizePath(args[i + 1]))
                     i += 1
                 }
+            } else if arg.hasPrefix("--branch=") {
+                gitArgs.append(sanitizePath(String(arg.dropFirst("--branch=".count))))
             } else if arg == "--staged" || arg == "--cached" {
                 gitArgs.append(arg)
-            } else if !arg.hasPrefix("-") && FileManager.default.fileExists(atPath: arg) {
+            } else if !arg.hasPrefix("-") && FileManager.default.fileExists(atPath: sanitizePath(arg)) {
                 // Ignore path if passed separately
             }
             i += 1
         }
         
-        guard let diffOutput = executeGit(args: gitArgs, at: workspacePath) else {
-            fputs("[ERROR: Failed to execute git diff in \(workspacePath)]\n", stderr)
+        guard let diffOutput = executeGit(args: gitArgs, at: sanitizedWorkspace) else {
+            fputs("[ERROR: Failed to execute git diff in \(sanitizedWorkspace)]\n", stderr)
             return
         }
         
@@ -45,7 +48,7 @@ public struct GitDiffRunner {
         var outputModels: [DiffOutputModel] = []
         
         for fileDiff in fileDiffs {
-            let fileURL = URL(fileURLWithPath: workspacePath).appendingPathComponent(fileDiff.filepath)
+            let fileURL = URL(fileURLWithPath: sanitizedWorkspace).appendingPathComponent(fileDiff.filepath)
             guard let fileContent = try? String(contentsOf: fileURL, encoding: .utf8) else {
                 continue
             }
@@ -86,22 +89,40 @@ public struct GitDiffRunner {
             }
         }
     }
-    
     private static func executeGit(args: [String], at path: String) -> String? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/git")
         process.arguments = args
         process.currentDirectoryURL = URL(fileURLWithPath: path)
         
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = Pipe()
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+        
+        final class DataBuffer: @unchecked Sendable {
+            var data = Data()
+        }
+        let outputBuffer = DataBuffer()
+        let group = DispatchGroup()
+        
+        group.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+            outputBuffer.data = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+            group.leave()
+        }
+        
+        group.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+            _ = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+            group.leave()
+        }
         
         do {
             try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
             process.waitUntilExit()
-            return String(data: data, encoding: .utf8)
+            group.wait()
+            return String(data: outputBuffer.data, encoding: .utf8)
         } catch {
             return nil
         }

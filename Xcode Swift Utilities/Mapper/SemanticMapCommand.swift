@@ -1,4 +1,4 @@
-// SemanticMapCommand.swift // Mapper
+// SemanticMapCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -27,11 +27,11 @@ func runSemanticMap(args: [String]) {
             isMermaid = true
         } else if arg == "--exclude" {
             if idx + 1 < args.count {
-                excludes = args[idx + 1].split(separator: ",").map { String($0) }
+                excludes = args[idx + 1].split(separator: ",").map { sanitizePath(String($0)) }
                 idx += 1
             }
         } else if arg.hasPrefix("--exclude=") {
-            excludes = String(arg.dropFirst(10)).split(separator: ",").map { String($0) }
+            excludes = String(arg.dropFirst(10)).split(separator: ",").map { sanitizePath(String($0)) }
         } else if arg.hasPrefix("-") {
             fputs("Unknown option: \(arg)\n", stderr)
             exit(1)
@@ -41,11 +41,12 @@ func runSemanticMap(args: [String]) {
         idx += 1
     }
     
-    guard let targetPath = path else {
+    guard let rawPath = path else {
         printUsage(toStderr: true)
         exit(1)
     }
     
+    let targetPath = sanitizePath(rawPath)
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: excludes)
     if swiftFiles.isEmpty {
         fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)

@@ -1,4 +1,4 @@
-// ViewSkeletonCommand.swift // Skeleton
+// ViewSkeletonCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -14,7 +14,8 @@ func runViewSkeleton(args: [String]) {
         fputs("Usage: XCSwiftMap view-skeleton <file-path>\n", stderr)
         exit(1)
     }
-    let targetPath = args[0]
+    let rawPath = args[0]
+    let targetPath = sanitizePath(rawPath)
     let resolvedPath = resolveOrExitTarget(targetPath)
     let fileURL = URL(fileURLWithPath: resolvedPath)
     

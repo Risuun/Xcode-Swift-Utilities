@@ -1,4 +1,4 @@
-// FlattenDepsCommand.swift // Commands
+// FlattenDepsCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -65,12 +65,18 @@ public func runFlattenDeps(args: [String]) {
         idx += 1
     }
     
-    guard let targetSymbol = symbol, !targetSymbol.isEmpty else {
+    guard let rawSymbol = symbol else {
+        fputs("Usage: XCSwiftMap flatten-deps --symbol <symbol> [--directory <path>]\n", stderr)
+        exit(1)
+    }
+    let targetSymbol = sanitizePath(rawSymbol)
+    guard !targetSymbol.isEmpty else {
         fputs("Usage: XCSwiftMap flatten-deps --symbol <symbol> [--directory <path>]\n", stderr)
         exit(1)
     }
     
-    let resolvedDir = resolveOrExitTarget(directory)
+    let sanitizedDir = sanitizePath(directory)
+    let resolvedDir = resolveOrExitTarget(sanitizedDir)
     let swiftFiles = findSwiftFiles(at: resolvedDir, excluding: [])
     if swiftFiles.isEmpty {
         fputs("[ERROR: Target not found: \(directory)]\n", stderr)
@@ -91,7 +97,7 @@ public func runFlattenDeps(args: [String]) {
         }
     }
     
-    guard let rootFunc = allFunctions[targetSymbol] else {
+    guard allFunctions[targetSymbol] != nil else {
         fputs("[ERROR: Symbol not found: \(targetSymbol)]\n", stderr)
         exit(1)
     }

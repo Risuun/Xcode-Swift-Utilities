@@ -1,4 +1,4 @@
-// FilterAuditVisitor.swift // Auditor
+// FilterAuditVisitor.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -228,19 +228,24 @@ public func runAuditFilters(args: [String]) {
         idx += 1
     }
     
-    guard let targetModel = modelName, !targetModel.isEmpty else {
+    guard let rawModel = modelName else {
+        fputs("Usage: XCSwiftMap audit-filters --model <ModelName> [directory-or-file-path] [--json]\n", stderr)
+        exit(1)
+    }
+    let targetModel = sanitizePath(rawModel)
+    guard !targetModel.isEmpty else {
         fputs("Usage: XCSwiftMap audit-filters --model <ModelName> [directory-or-file-path] [--json]\n", stderr)
         exit(1)
     }
     
-    let swiftFiles = findSwiftFiles(at: path, excluding: [])
+    let sanitizedPath = sanitizePath(path)
+    let swiftFiles = findSwiftFiles(at: sanitizedPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("[ERROR: Target not found: \(path)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
     
-    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(path))
-    
+    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(sanitizedPath))
     let results = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [FilterAuditResult] in
         guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "audit-filters", queryOrModel: targetModel) else {
             return []

@@ -166,15 +166,18 @@ public func runBindCheck(args: [String]) {
         exit(1)
     }
     
-    let resolvedModelPath = resolveOrExitTarget(mPath)
-    let resolvedViewPath = resolveOrExitTarget(vPath)
+    let sanitizedModel = sanitizePath(mPath)
+    let sanitizedView = sanitizePath(vPath)
+    
+    let resolvedModelPath = resolveOrExitTarget(sanitizedModel)
+    let resolvedViewPath = resolveOrExitTarget(sanitizedView)
     
     guard let modelContent = try? String(contentsOfFile: resolvedModelPath, encoding: .utf8) else {
-        fputs("[ERROR: Target not found: \(mPath)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedModel)]\n", stderr)
         exit(1)
     }
     guard let viewContent = try? String(contentsOfFile: resolvedViewPath, encoding: .utf8) else {
-        fputs("[ERROR: Target not found: \(vPath)]\n", stderr)
+        fputs("[ERROR: Target not found: \(sanitizedView)]\n", stderr)
         exit(1)
     }
     

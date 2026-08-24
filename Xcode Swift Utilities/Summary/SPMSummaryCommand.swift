@@ -1,4 +1,4 @@
-// SPMSummaryCommand.swift // Summary
+// SPMSummaryCommand.swift // XCEdit //
 
 import Foundation
 
@@ -26,11 +26,12 @@ func runSPMSummary(args: [String]) {
     }
     
     let rawPath = path ?? FileManager.default.currentDirectoryPath
-    let resolvedPath = resolveOrExitTarget(rawPath)
+    let targetPath = sanitizePath(rawPath)
+    let resolvedPath = resolveOrExitTarget(targetPath)
     let resolvedFiles = findPackageResolvedFiles(at: resolvedPath)
     
     if resolvedFiles.isEmpty {
-        fputs("[ERROR: Target not found: \(rawPath)]\n", stderr)
+        fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)
         exit(1)
     }
     

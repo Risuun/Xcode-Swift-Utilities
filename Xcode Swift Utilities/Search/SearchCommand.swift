@@ -1,7 +1,4 @@
-// SearchCommand.swift // Search
-//
-// CLI command handlers for 'search' and 'index'.
-//
+// SearchCommand.swift // XCEdit //
 
 import Foundation
 
@@ -34,11 +31,17 @@ public func runSearch(args: [String]) {
         idx += 1
     }
     
-    guard let searchConcept = query, !searchConcept.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+    guard let rawConcept = query else {
+        fputs("[ERROR: Missing search query concept]\n", stderr)
+        exit(1)
+    }
+    let searchConcept = sanitizePath(rawConcept)
+    guard !searchConcept.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
         fputs("[ERROR: Missing search query concept]\n", stderr)
         exit(1)
     }
     
+    let sanitizedPath = sanitizePath(targetPath)
     let modelPath = ModelResolver.resolveModelPathOrExit()
     
     guard let engine = try? EmbeddingEngine(modelPath: modelPath) else {
@@ -46,13 +49,13 @@ public func runSearch(args: [String]) {
         exit(1)
     }
     
-    let swiftFiles = findSwiftFiles(at: targetPath, excluding: [])
+    let swiftFiles = findSwiftFiles(at: sanitizedPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("[ERROR: Target not found or contains no Swift files: \(targetPath)]\n", stderr)
+        fputs("[ERROR: Target not found or contains no Swift files: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
     
-    let index = CodeVectorIndex(engine: engine, targetPath: targetPath)
+    let index = CodeVectorIndex(engine: engine, targetPath: sanitizedPath)
     index.indexFiles(swiftFiles)
     
     let results = index.search(query: searchConcept, threshold: 0.55, limit: limit)
@@ -106,6 +109,7 @@ public func runIndex(args: [String]) {
         }
     }
     
+    let sanitizedPath = sanitizePath(targetPath)
     let modelPath = ModelResolver.resolveModelPathOrExit()
     
     guard let engine = try? EmbeddingEngine(modelPath: modelPath) else {
@@ -113,15 +117,15 @@ public func runIndex(args: [String]) {
         exit(1)
     }
     
-    let swiftFiles = findSwiftFiles(at: targetPath, excluding: [])
+    let swiftFiles = findSwiftFiles(at: sanitizedPath, excluding: [])
     if swiftFiles.isEmpty {
-        fputs("[ERROR: Target not found or contains no Swift files: \(targetPath)]\n", stderr)
+        fputs("[ERROR: Target not found or contains no Swift files: \(sanitizedPath)]\n", stderr)
         exit(1)
     }
     
-    let index = CodeVectorIndex(engine: engine, targetPath: targetPath)
+    let index = CodeVectorIndex(engine: engine, targetPath: sanitizedPath)
     let stats = index.indexFiles(swiftFiles)
-    let root = findProjectRoot(from: targetPath)
+    let root = findProjectRoot(from: sanitizedPath)
     let leafProject = root.lastPathComponent
     
     print("[OK: Indexed \(stats.totalChunks) chunks across \(stats.fileCount) files in \(leafProject)]")

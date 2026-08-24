@@ -1,4 +1,4 @@
-// LocateCommand.swift // Common
+// LocateCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -98,18 +98,26 @@ func runLocate(args: [String]) {
         idx += 1
     }
 
-    guard let targetSymbol = symbol else {
+    guard let rawSymbol = symbol else {
         fputs("Usage: XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]\n", stderr)
         exit(1)
     }
 
-    let swiftFiles = findSwiftFiles(at: path, excluding: [])
-    if swiftFiles.isEmpty {
-        fputs("[ERROR: Target not found: \(path)]\n", stderr)
+    let targetSymbol = sanitizePath(rawSymbol)
+    guard !targetSymbol.isEmpty else {
+        fputs("Usage: XCSwiftMap locate <symbol-query> [directory-or-file-path] [--json]\n", stderr)
         exit(1)
     }
 
-    let baseURL = URL(fileURLWithPath: resolveOrExitTarget(path))
+    let sanitizedPath = sanitizePath(path)
+    let resolvedPath = resolveOrExitTarget(sanitizedPath)
+    let swiftFiles = findSwiftFiles(at: resolvedPath, excluding: [])
+    if swiftFiles.isEmpty {
+        fputs("[ERROR: Target not found: \(sanitizedPath)]\n", stderr)
+        exit(1)
+    }
+
+    let baseURL = URL(fileURLWithPath: resolvedPath)
 
     let results = ParallelASTScanner.scan(files: swiftFiles) { fileURL -> [SymbolLocationModel] in
         guard FastFilter.shouldParse(fileURL: fileURL, subcommand: "locate", queryOrModel: targetSymbol) else {

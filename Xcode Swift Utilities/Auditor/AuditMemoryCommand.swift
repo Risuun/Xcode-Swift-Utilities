@@ -1,4 +1,4 @@
-// AuditMemoryCommand.swift // Auditor
+// AuditMemoryCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -27,11 +27,12 @@ func runAuditMemory(args: [String]) {
         idx += 1
     }
     
-    guard let targetPath = path else {
+    guard let rawPath = path else {
         fputs("Usage: XCSwiftMap audit-memory [--json] <directory-or-file-path>\n", stderr)
         exit(1)
     }
     
+    let targetPath = sanitizePath(rawPath)
     let swiftFiles = findSwiftFiles(at: targetPath, excluding: [])
     if swiftFiles.isEmpty {
         fputs("[ERROR: Target not found: \(targetPath)]\n", stderr)

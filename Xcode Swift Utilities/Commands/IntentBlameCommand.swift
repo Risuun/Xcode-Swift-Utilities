@@ -1,4 +1,4 @@
-// IntentBlameCommand.swift // Commands
+// IntentBlameCommand.swift // XCEdit //
 
 import Foundation
 import SwiftSyntax
@@ -63,10 +63,13 @@ public func runIntentBlame(args: [String]) {
         filePath = positional[1]
     }
     
-    guard let targetSymbol = symbol, let targetPath = filePath else {
+    guard let rawSymbol = symbol, let rawPath = filePath else {
         fputs("Usage: XCSwiftMap intent-blame <symbol> <file-path>\n", stderr)
         exit(1)
     }
+    
+    let targetSymbol = sanitizePath(rawSymbol)
+    let targetPath = sanitizePath(rawPath)
     
     let resolvedPath = resolveOrExitTarget(targetPath)
     let fileURL = URL(fileURLWithPath: resolvedPath)
@@ -89,7 +92,7 @@ public func runIntentBlame(args: [String]) {
     let startLine = funcDecl.startLocation(converter: converter).line
     let endLine = funcDecl.endLocation(converter: converter).line
     
-    // Execute git blame --porcelain
+    // Execute git blame --porcelain with non-blocking pipe reads
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/git")
     process.arguments = ["blame", "-L", "\(startLine),\(endLine)", "--porcelain", fileURL.path]
@@ -100,16 +103,34 @@ public func runIntentBlame(args: [String]) {
     process.standardOutput = stdoutPipe
     process.standardError = stderrPipe
     
+    final class DataBuffer: @unchecked Sendable {
+        var data = Data()
+    }
+    let outputBuffer = DataBuffer()
+    let group = DispatchGroup()
+    
+    group.enter()
+    DispatchQueue.global(qos: .userInitiated).async {
+        outputBuffer.data = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+        group.leave()
+    }
+    
+    group.enter()
+    DispatchQueue.global(qos: .userInitiated).async {
+        _ = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+        group.leave()
+    }
+    
     do {
         try process.run()
-        let data = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
+        group.wait()
         
-        guard let output = String(data: data, encoding: .utf8), !output.isEmpty else {
+        let stdoutData = outputBuffer.data
+        guard let output = String(data: stdoutData, encoding: .utf8), !output.isEmpty else {
             fputs("[ERROR: Git blame returned no output for \(fileURL.lastPathComponent):\(startLine)-\(endLine)]\n", stderr)
             exit(1)
         }
-        
         struct CommitEntry {
             let hash: String
             let timestamp: Int

@@ -1,41 +1,84 @@
-// FileScanner.swift // Common
+// FileScanner.swift // XCEdit //
 
 import Foundation
 
+public func sanitizePath(_ rawPath: String) -> String {
+    var path = rawPath.trimmingCharacters(in: .whitespacesAndNewlines)
+    while (path.hasPrefix("\"") && path.hasSuffix("\"") && path.count >= 2) ||
+          (path.hasPrefix("'") && path.hasSuffix("'") && path.count >= 2) {
+        path = String(path.dropFirst().dropLast()).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    path = (path as NSString).expandingTildeInPath
+    return path
+}
+
+public func normalizePath(_ rawPath: String, relativeTo basePath: String = FileManager.default.currentDirectoryPath) -> String {
+    let sanitized = sanitizePath(rawPath)
+    if sanitized.isEmpty || sanitized == "." || sanitized == "./" {
+        return URL(fileURLWithPath: sanitizePath(basePath)).standardizedFileURL.path
+    }
+    if sanitized.hasPrefix("/") {
+        return URL(fileURLWithPath: sanitized).standardizedFileURL.path
+    }
+    let baseURL = URL(fileURLWithPath: sanitizePath(basePath))
+    return URL(fileURLWithPath: sanitized, relativeTo: baseURL).standardizedFileURL.path
+}
+
 public func findProjectRoot(from startPath: String = FileManager.default.currentDirectoryPath) -> URL {
-    var current = URL(fileURLWithPath: startPath).standardizedFileURL
-    while current.path != "/" {
+    let sanitized = sanitizePath(startPath)
+    var current = URL(fileURLWithPath: sanitized).standardizedFileURL
+    while current.path != "/" && current.pathComponents.count > 1 {
         let gitPath = current.appendingPathComponent(".git").path
         if FileManager.default.fileExists(atPath: gitPath) {
             return current
         }
         if let contents = try? FileManager.default.contentsOfDirectory(atPath: current.path) {
-            if contents.contains(where: { $0.hasSuffix(".xcodeproj") || $0 == "Package.swift" }) {
+            if contents.contains(where: { $0.hasSuffix(".xcodeproj") || $0.hasSuffix(".xcworkspace") || $0 == "Package.swift" }) {
                 return current
             }
         }
         current = current.deletingLastPathComponent()
     }
-    return URL(fileURLWithPath: startPath).standardizedFileURL
+    return URL(fileURLWithPath: sanitized).standardizedFileURL
 }
 
 public func resolveTargetFileOrDirectory(_ inputPath: String) -> String? {
-    let directURL = URL(fileURLWithPath: inputPath, relativeTo: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)).standardizedFileURL
+    let sanitized = sanitizePath(inputPath)
+    guard !sanitized.isEmpty else { return nil }
+    
+    let currentDir = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).standardizedFileURL
+    let directURL: URL
+    if sanitized.hasPrefix("/") {
+        directURL = URL(fileURLWithPath: sanitized).standardizedFileURL
+    } else {
+        directURL = URL(fileURLWithPath: sanitized, relativeTo: currentDir).standardizedFileURL
+    }
+    
     if FileManager.default.fileExists(atPath: directURL.path) {
         return directURL.path
     }
     
-    let rootURL = findProjectRoot()
-    let leafName = URL(fileURLWithPath: inputPath).lastPathComponent
+    let rootURL = findProjectRoot(from: currentDir.path)
+    let leafName = URL(fileURLWithPath: sanitized).lastPathComponent
     
-    let enumerator = FileManager.default.enumerator(
+    guard let enumerator = FileManager.default.enumerator(
         at: rootURL,
         includingPropertiesForKeys: [.isDirectoryKey],
         options: [.skipsHiddenFiles, .skipsPackageDescendants]
-    )
+    ) else {
+        return nil
+    }
     
-    while let fileURL = enumerator?.nextObject() as? URL {
-        if fileURL.lastPathComponent == leafName || fileURL.lastPathComponent == inputPath {
+    while let fileURL = enumerator.nextObject() as? URL {
+        let isDir = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        let name = fileURL.lastPathComponent
+        if isDir {
+            if FileDiscovery.isIgnoredDirectory(name: name, path: fileURL.path) {
+                enumerator.skipDescendants()
+                continue
+            }
+        }
+        if fileURL.lastPathComponent == leafName || fileURL.lastPathComponent == sanitized {
             return fileURL.standardizedFileURL.path
         }
     }
@@ -44,7 +87,8 @@ public func resolveTargetFileOrDirectory(_ inputPath: String) -> String? {
 }
 
 public func resolveOrExitTarget(_ inputPath: String) -> String {
-    guard let resolved = resolveTargetFileOrDirectory(inputPath) else {
+    let sanitized = sanitizePath(inputPath)
+    guard let resolved = resolveTargetFileOrDirectory(sanitized) else {
         fputs("[ERROR: Target not found: \(inputPath)]\n", stderr)
         exit(1)
     }
@@ -53,9 +97,19 @@ public func resolveOrExitTarget(_ inputPath: String) -> String {
 
 public struct FileDiscovery {
     public static let ignoredDirectories: Set<String> = [
-        ".build", "DerivedData", ".git", "Pods", "Carthage", 
-        "Preview Content", "Tests", "UITests", "build"
+        "DerivedData", ".build", ".git", ".swiftpm", ".xcodeproj", ".xcworkspace",
+        "Pods", "Carthage", "Preview Content", "Tests", "UITests", "build"
     ]
+    
+    public static func isIgnoredDirectory(name: String, path: String = "") -> Bool {
+        if ignoredDirectories.contains(name) || name.hasSuffix(".xcodeproj") || name.hasSuffix(".xcworkspace") {
+            return true
+        }
+        if !path.isEmpty && shouldExclude(path, patterns: []) {
+            return true
+        }
+        return false
+    }
     
     public static func discoverSwiftFiles(at path: String, excluding: [String] = []) -> [URL] {
         let resolvedPath = resolveOrExitTarget(path)
@@ -73,14 +127,17 @@ public struct FileDiscovery {
         guard let enumerator = FileManager.default.enumerator(
             at: url,
             includingPropertiesForKeys: [.isDirectoryKey],
-            options: [.skipsHiddenFiles]
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
         ) else { return [] }
         
         var swiftFiles = [URL]()
         for case let fileURL as URL in enumerator {
-            if let isSubDir = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory, isSubDir {
-                if ignoredDirectories.contains(fileURL.lastPathComponent) || shouldExclude(fileURL.path, patterns: excluding) {
+            let isSubDir = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+            if isSubDir {
+                let name = fileURL.lastPathComponent
+                if isIgnoredDirectory(name: name, path: fileURL.path) || shouldExclude(fileURL.path, patterns: excluding) {
                     enumerator.skipDescendants()
+                    continue
                 }
             } else if fileURL.pathExtension == "swift" {
                 if !shouldExclude(fileURL.path, patterns: excluding) {
@@ -167,7 +224,10 @@ public func findSwiftFiles(at path: String, excluding: [String] = []) -> [URL] {
 }
 
 public func shouldExclude(_ path: String, patterns: [String]) -> Bool {
-    let defaultIgnores = [".build", "DerivedData", ".xcodeproj", ".xcworkspace", ".swiftpm", "/Pods/", "/Carthage/", "/.git/"]
+    let defaultIgnores = [
+        "DerivedData", ".build", ".git", ".swiftpm", ".xcodeproj", ".xcworkspace",
+        "Pods", "Carthage", "/Pods/", "/Carthage/", "/.git/", "/DerivedData/", "/.build/", "/.swiftpm/"
+    ]
     for ignore in defaultIgnores {
         if path.contains(ignore) {
             return true
